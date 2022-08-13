@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(ProtocolV2)
+
+# Specify standatd
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
+
+# Libraries
+add_subdirectory(shared)
+
+add_executable(ProtocolV2 main.cpp)
+target_link_libraries(ProtocolV2 protocol)
+
