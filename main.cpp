@@ -1,21 +1,26 @@
 #include <iostream>
 
 #include "shared/primitives.hpp"
+#include "shared/messages.hpp"
 
 int main() {
     char buffer[100] = {0,};
-    protocol::primitives::Int32 n = 10;
-    protocol::primitives::Int16 n2 = 1234;
-    n = 14;
-    buffer << n << n << n2 << n2 << protocol::primitives::Int8(123);
+
+    protocol::messages::Header header;
+    header.len = 12345;
+    header.message_checksum = 123456789;
+    header.header_checksum = 87654321;
+
+    buffer << header;
+
     for (int i = 0; i < sizeof(buffer); i++)
         std::cout << std::hex << static_cast<int>((unsigned char)buffer[i]) << ' ';
+    
+    protocol::messages::Header h2;
+    buffer >> h2;
 
-    protocol::primitives::Int32 recn1, recn2;
-    protocol::primitives::Int16 recn3, recn4;
-    protocol::primitives::Int8 recn5;
+    std::cout << std::dec;
+    std::cout << '\n' << (uint32_t)h2.len << ' ' << (uint32_t)h2.message_checksum << ' ' << (uint32_t)h2.header_checksum << '\n';
 
-    buffer >> recn1 >> recn2 >> recn3 >> recn4 >> recn5;
-    std::cout << '\n' << std::dec << recn1 << ' ' << recn2 << ' ' << recn3 << ' ' << recn4 << ' ' << (uint32_t)recn5 << '\n';
     return 0;
 }

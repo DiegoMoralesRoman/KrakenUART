@@ -29,26 +29,28 @@ const bool ___init = []() -> bool {
 // Operators
 
     // Serialization
-___impl::SerializableContinuation&& ___impl::SerializableContinuation::operator<<(const Serializable &ser) {
+template<>
+___impl::SerializableContinuation<char*>&& ___impl::SerializableContinuation<char*>::operator<<(const Serializable &ser) {
     ser.serialize(buffer + cum_offset);
     cum_offset += ser.size();
     return std::move(*this);
 }
 
 
-___impl::SerializableContinuation protocol::primitives::operator<<(char* buffer, const Serializable& ser) {
+___impl::SerializableContinuation<char*> protocol::primitives::operator<<(char* buffer, const Serializable& ser) {
     ser.serialize(buffer);
     return {buffer, ser.size()};
 }
 
     // Deserialization
-___impl::SerializableContinuation&& ___impl::SerializableContinuation::operator>>(Serializable &ser) {
+template<>
+___impl::SerializableContinuation<const char*>&& ___impl::SerializableContinuation<const char*>::operator>>(Serializable &ser) {
     ser.deserialize(buffer + cum_offset);
     cum_offset += ser.size();
     return std::move(*this);
 }
 
-___impl::SerializableContinuation protocol::primitives::operator>>(char *buffer, Serializable &ser) {
+___impl::SerializableContinuation<const char*> protocol::primitives::operator>>(const char *buffer, Serializable &ser) {
     ser.deserialize(buffer);
     return {buffer, ser.size()};
 }
@@ -107,3 +109,29 @@ void Int8::serialize(char *t_buffer) const {
 void Int8::deserialize(const char *t_buffer) {
     m_value = t_buffer[0];
 }
+
+// String
+    // NOP deleter
+struct nop {
+    template<typename T>
+    void operator() (T const&) const noexcept {}
+};
+
+void String::serialize(char *t_buffer) const {
+    t_buffer = t_buffer << Size(string.length());
+    // Copy string into buffer
+    for (size_t i = 0; i < string.length(); i++)
+        t_buffer[i] = string[i];
+}
+
+void String::deserialize(const char *t_buffer) {
+    Size len;
+    t_buffer = t_buffer >> len;
+    string = std::string(static_cast<uint32_t>(len), '\0');
+    // Copy to string
+    for (size_t i = 0; i < static_cast<uint32_t>(len); i++)
+        string[i] = t_buffer[i];
+}
+
+String::String(const char* str)
+    : string(str) {}
