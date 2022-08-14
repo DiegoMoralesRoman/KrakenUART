@@ -6,21 +6,22 @@
 int main() {
     char buffer[100] = {0,};
 
-    protocol::messages::Header header;
-    header.len = 12345;
-    header.message_checksum = 123456789;
-    header.header_checksum = 87654321;
+    protocol::messages::Admin msg;
+    msg.len = 12345;
 
-    buffer << header;
+    msg.ack = 14;
+
+    buffer << msg;
 
     for (int i = 0; i < sizeof(buffer); i++)
         std::cout << std::hex << static_cast<int>((unsigned char)buffer[i]) << ' ';
     
-    protocol::messages::Header h2;
-    buffer >> h2;
+    protocol::messages::Admin admin;
+    buffer >> admin;
 
     std::cout << std::dec;
-    std::cout << '\n' << (uint32_t)h2.len << ' ' << (uint32_t)h2.message_checksum << ' ' << (uint32_t)h2.header_checksum << '\n';
+    std::cout << '\n' << (uint32_t)admin.len << ' ' << (uint32_t)admin.header_checksum << ' ' << (int)(uint8_t)admin.message_type << '\n';
+    std::cout << (int)admin.ack << ' ' << (bool)admin.is_valid() << '\n';
 
     return 0;
 }

@@ -17,8 +17,9 @@ namespace protocol::primitives {
              * @brief Adds the data of the structure to the buffer starting at the position 0
              * 
              * @param buffer Buffer to store the serialized data
+             * @return passed buffer advanced to the next serializable position
              */
-            virtual void serialize(char* buffer) const = 0;
+            virtual char* serialize(char* buffer) const = 0;
             /**
              * @brief Returns the size of the serialized structure
              *
@@ -29,8 +30,9 @@ namespace protocol::primitives {
              * @brief Reads data from a buffer and stores it inside the structure
              * 
              * @param buffer Buffer where the data is stored
+             * @return passed buffer advanced to the next serializable position
              */
-            virtual void deserialize(const char* buffer) = 0;
+            virtual const char* deserialize(const char* buffer) = 0;
     };
 
     // Operators
@@ -62,12 +64,13 @@ namespace protocol::primitives {
             Int32() = default;
             operator uint32_t() const {return m_value;}
             operator size_t() const {return static_cast<size_t>(m_value);}
+            Int32& operator=(const uint32_t value) {m_value = value; return *this;}
 
             // Virtual methods overloading
             static constexpr size_t static_size() {return 4;}
             virtual size_t size() const {return static_size();}
-            virtual void serialize(char* buffer) const;
-            virtual void deserialize(const char* buffer);
+            virtual char* serialize(char* buffer) const;
+            virtual const char* deserialize(const char* buffer);
         private:
             uint32_t m_value = 0;
     };
@@ -78,12 +81,13 @@ namespace protocol::primitives {
             Int16(uint16_t n) : m_value(n) {}
             Int16() = default;
             operator uint16_t() const {return m_value;}
+            Int16& operator=(const uint16_t value) {m_value = value; return *this;}
             // Virtual methods overloading
 
             static constexpr size_t static_size() {return 2;}
             virtual size_t size() const {return static_size();}
-            virtual void serialize(char* buffer) const;
-            virtual void deserialize(const char* buffer);
+            virtual char* serialize(char* buffer) const;
+            virtual const char* deserialize(const char* buffer);
         private:
             uint16_t m_value = 0;
     };
@@ -93,12 +97,13 @@ namespace protocol::primitives {
             Int8(uint8_t n) : m_value(n) {}
             Int8() = default;
             operator uint8_t() const {return m_value;}
+            Int8& operator=(const uint8_t value) {m_value = value; return *this;}
             // Virtual methods overloading
 
             static constexpr size_t static_size() {return 1;}
             virtual size_t size() const {return static_size();}
-            virtual void serialize(char* buffer) const;
-            virtual void deserialize(const char* buffer);
+            virtual char* serialize(char* buffer) const;
+            virtual const char* deserialize(const char* buffer);
         private:
             uint8_t m_value = 0;
     };
@@ -112,8 +117,8 @@ namespace protocol::primitives {
             std::string string;
             // Virtual methods overloading
             virtual size_t size() const {return string.length() + Int32::static_size();}
-            virtual void serialize(char* buffer) const;
-            virtual void deserialize(const char* buffer);
+            virtual char* serialize(char* buffer) const;
+            virtual const char* deserialize(const char* buffer);
     };
 }
 
