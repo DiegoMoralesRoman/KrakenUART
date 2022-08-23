@@ -8,14 +8,18 @@ using namespace protocol::messages;
 // Header
 // ==================================================
 
+#include <iostream>
 uint32_t Header::get_checksum() const {
-    return uahruart::utils::hash_uint32(len) ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(type()));
+    if (len != message_type)
+        return uahruart::utils::hash_uint32(len) ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(message_type));
+    else
+        return (uahruart::utils::hash_uint32(len) * 2) ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(message_type));
 }
 
 char* Header::serialize(char *buffer) const {
     // Calculate checksum
     header_checksum = get_checksum();
-    return buffer << len << header_checksum << primitives::Int8(type());
+    return buffer << len << header_checksum << message_type;
 }
 
 const char* Header::deserialize(const char *buffer) {
@@ -28,12 +32,10 @@ const char* Header::deserialize(const char *buffer) {
 // Admin
 // ==================================================
 char* Admin::serialize(char* buffer) const {
-    buffer = Header::serialize(buffer);
     return buffer << ack;
 } 
 
 const char* Admin::deserialize(const char* buffer) {
-    buffer = Header::deserialize(buffer); 
     return buffer >> ack;
 }
 

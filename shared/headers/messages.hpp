@@ -16,6 +16,14 @@ namespace protocol::messages {
     // ==================================================
     // Protocol messages
     // ==================================================
+    
+    /**
+     * @brief Protocol message base class containing all methods neccessary to send a message
+     */
+    class ProtocolMessage : public primitives::Serializable {
+        public:
+            virtual uint8_t type() const = 0;
+    };
 
     /**
      * @brief Header of every message it contains the length of the message and a checksum of both the header and the entire message
@@ -25,7 +33,7 @@ namespace protocol::messages {
         public:
             // Message values
             /** @brief length of the message body */
-            primitives::Int16 len;
+            mutable primitives::Int16 len;
             /** @brief checksum of the header only */
             mutable primitives::Int32 header_checksum;
             /**
@@ -40,35 +48,31 @@ namespace protocol::messages {
              */
             bool is_valid() {return m_is_valid_checksum;}
 
-            virtual size_t size() const {return len.size() + header_checksum.size() + message_type.size();}
+            virtual size_t size() const {return Header::static_size();}
+            static constexpr size_t static_size() {return decltype(len)::static_size() + decltype(header_checksum)::static_size() + decltype(message_type)::static_size();}
             /**
              * @details The header checksum is generated at serialization time
              */
             virtual char* serialize(char* buffer) const;
             virtual const char* deserialize(const char* buffer);
-            
-            /**
-             * @brief Returns the type of the message (defined in protocol::messages::Types)
-             */
-            virtual uint8_t type() const = 0;
         private:
             uint32_t get_checksum() const;
-
             bool m_is_valid_checksum = false;
     };
+
 
     /**
      * @brief 
      */
-    class Admin : public Header {
+    class Admin : public ProtocolMessage {
         public:
             primitives::Int8 ack;
 
-            virtual size_t size() const override {return ack.size() + Header::size(); }
+            virtual size_t size() const override {return ack.size();}
             virtual char* serialize(char* buffer) const override;
             virtual const char* deserialize(const char* buffer) override;
 
-            virtual uint8_t type() const override {return Types::ADMIN;}
+            virtual uint8_t type() const override {return ADMIN;}
     };
 
     // ==================================================
