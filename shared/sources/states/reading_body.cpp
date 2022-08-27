@@ -5,10 +5,6 @@ using namespace protocol::states;
 // -- DEBUG --
 #include <iostream>
 
-namespace {
-    bool ack_read_pending = false;
-}
-
 void ReadingBody::on_enter() {
     ack_read_pending = true;
     m_state_machine->reset_read();
@@ -40,13 +36,16 @@ State* ReadingBody::parse_byte(const char t_byte) {
                 break;
             default: // Corrupt header
                 // Send HEADER ACK only if there is no more data left
-                if (last) {
-                    m_state_machine->send_ack(messages::HEADER_ACK, true);
+                if (sent_nack) {
+                    m_state_machine->send_ack(messages::BODY_NACK, true);
                     on_enter();
+                } else if (last) {
+                    m_state_machine->send_ack(messages::HEADER_ACK, true);
                 }
                 break;
         }
 
+        sent_nack = false;
         return this;
     }
 
@@ -65,6 +64,7 @@ State* ReadingBody::parse_byte(const char t_byte) {
             m_state_machine->send_ack(messages::BODY_ACK, true);
             return &m_state_machine->s_reading_header;
         } else { // Invalid checksum send body NACK
+            sent_nack = true;
             m_state_machine->send_ack(messages::BODY_NACK, true);
             on_enter();
         }

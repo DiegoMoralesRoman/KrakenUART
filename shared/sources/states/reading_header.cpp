@@ -7,16 +7,13 @@
 
 using namespace protocol::states;
 
-namespace {
-    bool ack_read_pending = false;
-}
-
 void ReadingHeader::on_enter() {
     ack_read_pending = true;
     m_state_machine->reset_read();
 }
 
 void ReadingHeader::on_exit() {
+    
 }
 
 
@@ -42,11 +39,15 @@ State* ReadingHeader::parse_byte(const char t_byte) {
                 break;
             default: // Corrupt header
                 // Send BODY ACK only if there is no more data left
-                if (last)
+                if (sent_nack) {
+                    m_state_machine->send_ack(messages::HEADER_NACK, true);
+                    on_enter();
+                } else if (last)
                     m_state_machine->send_ack(messages::BODY_ACK, true);
                 break;
         }
 
+        sent_nack = false;
         return this;
     }
 
@@ -68,6 +69,7 @@ State* ReadingHeader::parse_byte(const char t_byte) {
             return &m_state_machine->s_reading_body;
         } else {
             // Send HEADER NACK
+            sent_nack = true;
             m_state_machine->send_ack(messages::HEADER_NACK, true);
             on_enter();
         }

@@ -55,6 +55,10 @@ namespace protocol::states {
             virtual State* parse_byte(const char t_byte);
             virtual void on_enter();
             virtual void on_exit();
+
+        private:
+            bool ack_read_pending = false;
+            bool sent_nack = false;
     };
 
 
@@ -73,6 +77,9 @@ namespace protocol::states {
         private:
             size_t m_body_len = 0;
             decltype(messages::Header::message_type)::Underlying_t m_message_type;
+
+            bool ack_read_pending = false;
+            bool sent_nack = false;
     };
 
     class ReadingTrailing: public State {

@@ -25,18 +25,20 @@ void StateMachine::parse_byte(const char t_byte) {
 }
 
 void StateMachine::send_message(const primitives::Serializable &&serializable) {
+    m_current_state = &s_waiting_header_ack;
     set_current_message(std::move(serializable));
     send_header_now();
 }
 
 void StateMachine::send_message(const messages::ProtocolMessage&& message) {
+    m_current_state = &s_waiting_header_ack;
     set_current_message(std::move(message));
     send_header_now();
 }
 
 // Utility methods
 void StateMachine::send_header_now() {
-    m_current_state = &s_waiting_header_ack;
+    //m_current_state = &s_waiting_header_ack;
     
     // Send header
     send_ack(messages::UNDEF_ACK, false);

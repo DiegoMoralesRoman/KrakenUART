@@ -10,7 +10,7 @@
 
 // FAIL TEST
 size_t sm1_fail_message = 1;
-size_t sm2_fail_message = 0;
+size_t sm2_fail_message = 2;
 // ---------
 
 std::queue<uint8_t> sm_queue, sm2_queue;
