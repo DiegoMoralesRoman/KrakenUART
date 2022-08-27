@@ -59,11 +59,12 @@ namespace protocol::primitives {
 
     class Int32 : public Serializable {
         public:
+            using Underlying_t = uint32_t;
             // Utility constructors
             Int32(uint32_t n) : m_value(n) {}
             Int32() = default;
             operator uint32_t() const {return m_value;}
-            operator size_t() const {return static_cast<size_t>(m_value);}
+            //operator size_t() const {return static_cast<size_t>(m_value);}
             Int32& operator=(const uint32_t value) {m_value = value; return *this;}
 
             // Virtual methods overloading
@@ -75,9 +76,13 @@ namespace protocol::primitives {
             uint32_t m_value = 0;
     };
     using Size = Int32;
+    using ACK = Int32;
+    using Checksum = Int32;
 
     class Int16 : public Serializable {
         public:
+            using Underlying_t = uint16_t;
+            // Utility constructors
             Int16(uint16_t n) : m_value(n) {}
             Int16() = default;
             operator uint16_t() const {return m_value;}
@@ -94,6 +99,8 @@ namespace protocol::primitives {
 
     class Int8 : public Serializable {
         public:
+            using Underlying_t = uint8_t;
+            // Utility constructors
             Int8(uint8_t n) : m_value(n) {}
             Int8() = default;
             operator uint8_t() const {return m_value;}
@@ -111,6 +118,8 @@ namespace protocol::primitives {
         // --- String types
     class String : public Serializable {
         public:
+            using Underlying_t = std::string;
+            // Utility constructors
             String(const char* str);
             String() = default;
 
@@ -120,6 +129,11 @@ namespace protocol::primitives {
             virtual char* serialize(char* buffer) const;
             virtual const char* deserialize(const char* buffer);
     };
+
+    // Boolean constants
+    using Bool = Int8;
+    extern const Int8 TRUE;
+    extern const Int8 FALSE;
 }
 
 #endif // PRIMITIVES_HPP

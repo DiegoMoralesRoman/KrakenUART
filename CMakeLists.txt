@@ -12,5 +12,5 @@ set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 add_subdirectory(shared)
 
 add_executable(ProtocolV2 main.cpp)
-target_link_libraries(ProtocolV2 protocol)
+target_link_libraries(ProtocolV2 protocol -lpthread)
 

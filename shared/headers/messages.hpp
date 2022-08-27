@@ -1,6 +1,7 @@
 #ifndef MESSAGES_HPP
 #define MESSAGES_HPP
 
+#include "utils.hpp"
 #include "primitives.hpp"
 
 namespace protocol::messages {
@@ -12,6 +13,17 @@ namespace protocol::messages {
 
         // Custom messages
     };
+
+    // ACK
+    enum ACKTypes : uint32_t {
+        HEADER_ACK = uahruart::utils::hash_uint32(0),
+        HEADER_NACK = uahruart::utils::hash_uint32(1),
+        BODY_ACK = uahruart::utils::hash_uint32(2),
+        BODY_NACK = uahruart::utils::hash_uint32(3),
+        UNDEF_ACK = uahruart::utils::hash_uint32(4),
+        CORR_ACK = uahruart::utils::hash_uint32(5)
+    };
+
 
     // ==================================================
     // Protocol messages

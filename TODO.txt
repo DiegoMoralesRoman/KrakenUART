@@ -1,0 +1,3 @@
+Create Secure bool that uses bigger data type and default to true when a corruption occurs
+
+- Fix current problem (sending BODY_ACK when HEADER_ACK is needed)

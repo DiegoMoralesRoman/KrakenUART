@@ -20,7 +20,17 @@ namespace uahruart {
     // ----------
     namespace utils {
         // Functions
-        uint32_t hash_uint32(uint32_t value);
+        constexpr uint32_t hash_uint32(const uint32_t value) {
+            uint32_t tmp = value;
+            tmp += ~(tmp<<15);
+            tmp ^=  (tmp>>10);
+            tmp +=  (tmp<<3);
+            tmp ^=  (tmp>>6);
+            tmp += ~(tmp<<11);
+            tmp ^=  (tmp>>16);
+            return tmp;
+        }
+
         uint32_t calculate_hash(void* ptr, uint8_t len);
 
         // Constexpr string hash calculation (it has to be in the header file)

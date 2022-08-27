@@ -5,9 +5,12 @@
 
 using namespace protocol::primitives;
 
+
 // ==================================================
 // Initialization
 // ==================================================
+const Int8 protocol::primitives::TRUE = Int8(0b11111111);
+const Int8 protocol::primitives::FALSE = false;
 
 // Global variables
 namespace {

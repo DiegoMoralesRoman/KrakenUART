@@ -3,16 +3,6 @@
 using namespace uahruart::utils;
 
 // Hashing functions
-uint32_t uahruart::utils::hash_uint32(uint32_t value) {
-        value += ~(value<<15);
-        value ^=  (value>>10);
-        value +=  (value<<3);
-        value ^=  (value>>6);
-        value += ~(value<<11);
-        value ^=  (value>>16);
-        return value;
-}
-
 uint32_t uahruart::utils::calculate_hash(void* ptr, uint8_t len) {
     /* uint32_t h = 1;
     for (uint32_t i = 0; i < len; i++)

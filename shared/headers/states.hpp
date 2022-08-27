@@ -61,7 +61,7 @@ namespace protocol::states {
     class ReadingBody : public State {
         public:
             // Initialization
-            void init(size_t len);
+            void init(size_t len, decltype(messages::Header::message_type)::Underlying_t type);
 
             ReadingBody(StateMachine* state_machine)
                 : State{state_machine} {}
@@ -72,6 +72,7 @@ namespace protocol::states {
 
         private:
             size_t m_body_len = 0;
+            decltype(messages::Header::message_type)::Underlying_t m_message_type;
     };
 
     class ReadingTrailing: public State {
@@ -141,9 +142,15 @@ namespace protocol::states {
 
             void set_current_message(const primitives::Serializable&& msg);
             void set_current_message(const messages::ProtocolMessage&& msg);
+
+            void send_ack(std::uint32_t ack, bool last);
+
+            void send_header_now();
+            void send_body_now();
         private:
             State* const INIT_STATE = &s_reading_header;
             State* m_current_state = INIT_STATE;
+            State* m_prev_state = INIT_STATE;
 
             friend ReadingHeader;
             friend WaitingHeaderACK;

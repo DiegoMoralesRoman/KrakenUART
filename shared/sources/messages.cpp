@@ -10,10 +10,15 @@ using namespace protocol::messages;
 
 #include <iostream>
 uint32_t Header::get_checksum() const {
+    uint32_t hash = 0;
     if (len != message_type)
-        return uahruart::utils::hash_uint32(len) ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(message_type));
+        hash = uahruart::utils::hash_uint32(len) 
+        ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(message_type));
     else
-        return (uahruart::utils::hash_uint32(len) * 2) ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(message_type));
+        hash = (uahruart::utils::hash_uint32(len) * 2) 
+        ^ uahruart::utils::hash_uint32(static_cast<uint32_t>(message_type));
+
+    return hash;
 }
 
 char* Header::serialize(char *buffer) const {
