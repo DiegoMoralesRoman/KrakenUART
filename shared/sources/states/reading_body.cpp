@@ -59,6 +59,7 @@ State* ReadingBody::parse_byte(const char t_byte) {
 
         if (static_cast<primitives::Checksum::Underlying_t>(checksum) == calculated_checksum) { // Valid checksum send body ACK
             // Send messages up
+            m_state_machine->m_has_send_priority = true;
             m_state_machine->m_msg_received(m_state_machine->m_msg_buffer.data(), m_message_type);
 
             m_state_machine->send_ack(messages::BODY_ACK, true);

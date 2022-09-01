@@ -101,6 +101,8 @@ int main() {
         }
     };
 
+    sm.m_msg_received = sm2.m_msg_received;
+
     // Print ack
     std::cout << "ACKs:\n" << std::hex;
 
@@ -123,6 +125,11 @@ int main() {
     sm.sent_complete_handler = [msg]() {
         std::cout << "Mensaje enviado correctamente" << std::endl;
         //sm.send_message(std::move(msg));
+        sm2.send_message(std::move(msg));
+    };
+
+    sm2.sent_complete_handler = []() {
+        std::cout << "Mensaje desde sm1" << std::endl;
     };
 
     sm.send_message(std::move(msg));

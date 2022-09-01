@@ -37,18 +37,65 @@ namespace protocol::primitives {
 
     // Operators
     namespace ___impl {
+        /**
+         * @brief Intermediate type that stores the current serialization step state
+         * @details This data type stores the current offset of the serialization to continue the next one. 
+         * It can also be converted into the original type implicitly. This makes this type completely transparent to the user
+         * With this operator the following syntax is made available for the user
+         * buff << ser1 << ser2 << ... << sern;
+         * buff >> ser1 >> ser2 >> ... >> sern;
+         * This will serialize and then deserialize multiple objects in the same order
+         */
         template<typename Buff_t>
         struct SerializableContinuation {
+            /**
+             * @brief Conversion to the base type (Buff_t)
+             *
+             * @return Buffer in the next available position for serialization
+             */
             operator Buff_t() {return buffer + cum_offset;}
+            /**
+             * @brief Serialization operator
+             * @param ser Serializable object to continue the serialization
+             * @return Intermediate state ready for the next serialization
+             */
             SerializableContinuation<char*> operator<<(const Serializable& ser);
+            /**
+             * @brief Deserialization operator
+             * @param ser Serializable object to continue the deserialization
+             * @return Intermediate state ready for the next serialization
+             */
             SerializableContinuation<const char*> operator>>(Serializable& ser);
 
+            /**
+             * @brief Absolute buffer where the date is stored/obtained
+             */
             Buff_t buffer;
+            /**
+             * @brief Current serialization/deserialization offset relative to the base buffer
+             */
             size_t cum_offset = 0;
         };
     }
 
+    /**
+     * @brief Used to serialize an object extending the Serializable class
+     * @details The return type allows to concatenate this operators to serialize multiple objects in the same expression
+     *      buff << ser1 << ser2 << ... << sern;
+     *
+     * @param buffer Buffer to store the objects into
+     * @param ser Serializabl object that has to be stored in the buffer
+     * @return Intermediate type that allows the concatenation of multiple serialization operations
+     */
     ___impl::SerializableContinuation<char*> operator<<(char* buffer, const Serializable& ser);
+    /**
+     * @brief Used to deserialize an object extending the Serializable class
+     * @details The return type allows to concatenate this operators to deserialize multiple objects in the same expression
+     *      buff >> ser1 >> ser2 >> ... >> sern;
+     *
+     * @param buffer Buffer from where to extract the data for the deserialization
+     * @param ser Serializable object to store the data into
+     */
     ___impl::SerializableContinuation<const char*> operator>>(const char* buffer, Serializable& ser);
 
     // ==================================================

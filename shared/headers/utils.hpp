@@ -1,6 +1,13 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+/*
+    Select functor library depending on the device running
+    If using an arduino std::function will most likely not be present so a custom library has to be used
+        The following are the platformio dependencies requires to run the protocol
+            mike-matera/ArduinoSTL @ ^1.3.3
+            silent/function_objects @ ^1.0.0
+*/
 #ifndef ARDUINO_BUILD
     #include <functional>
     template<typename __F>

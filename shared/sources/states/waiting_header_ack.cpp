@@ -5,6 +5,7 @@ using namespace protocol::states;
 
 void WaitingHeaderACK::on_enter() {
     m_state_machine->reset_read();
+    m_state_machine->m_has_send_priority = false;
 }
 
 void WaitingHeaderACK::on_exit() {

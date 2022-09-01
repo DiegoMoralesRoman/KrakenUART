@@ -68,7 +68,13 @@ namespace protocol::messages {
             virtual char* serialize(char* buffer) const;
             virtual const char* deserialize(const char* buffer);
         private:
+            /**
+             * @brief Calculates the current checksum of the header
+             */
             uint32_t get_checksum() const;
+            /**
+             * After deserialization this variable will tell if the header is valid (not corrupted).
+             */
             bool m_is_valid_checksum = false;
     };
 
