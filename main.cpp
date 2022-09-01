@@ -9,8 +9,8 @@
 #include <queue>
 
 // FAIL TEST
-size_t sm1_fail_message = 1;
-size_t sm2_fail_message = 2;
+size_t sm1_fail_message = -1;
+size_t sm2_fail_message = -1;
 // ---------
 
 std::queue<uint8_t> sm_queue, sm2_queue;
@@ -90,6 +90,16 @@ void sm2_reader() {
 }
 
 int main() {
+    sm2.m_msg_received = [](const char* buff, protocol::primitives::Int8::Underlying_t type) {
+        std::cout << "Message of type: " << (uint32_t)type << '\n';
+        switch (type) {
+            case protocol::messages::ADMIN:
+                protocol::messages::Admin msg;
+                buff >> msg;
+                std::cout << "Value: " << (uint32_t)msg.ack << '\n';
+                break;
+        }
+    };
 
     // Print ack
     std::cout << "ACKs:\n" << std::hex;
@@ -109,6 +119,11 @@ int main() {
 
     protocol::messages::Admin msg;
     msg.ack = 123;
+
+    sm.sent_complete_handler = [msg]() {
+        std::cout << "Mensaje enviado correctamente" << std::endl;
+        //sm.send_message(std::move(msg));
+    };
 
     sm.send_message(std::move(msg));
     

@@ -40,8 +40,8 @@ namespace protocol::primitives {
         template<typename Buff_t>
         struct SerializableContinuation {
             operator Buff_t() {return buffer + cum_offset;}
-            SerializableContinuation<char*>&& operator<<(const Serializable& ser);
-            SerializableContinuation<const char*>&& operator>>(Serializable& ser);
+            SerializableContinuation<char*> operator<<(const Serializable& ser);
+            SerializableContinuation<const char*> operator>>(Serializable& ser);
 
             Buff_t buffer;
             size_t cum_offset = 0;

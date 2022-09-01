@@ -1,5 +1,7 @@
 #include "../headers/states.hpp"
 
+#include <utility>
+
 using namespace protocol::states;
 
 // State machine
@@ -14,6 +16,12 @@ void StateMachine::parse_byte(const char t_byte) {
     State* prev_state = m_current_state;
     // Parse byte in the current state
     m_current_state = m_current_state->parse_byte(t_byte);
+
+    // Check if finished sending the current message
+    if (m_finished_sending) {
+        m_finished_sending = false;
+        sent_complete_handler();
+    }
     
     // If the state has changed call on_enter and on_exit methods
     if (prev_state != m_current_state) {
@@ -78,13 +86,13 @@ void StateMachine::reset_write() {
 #include <iostream>
 
 // Setting the buffer
-void StateMachine::set_current_message(const primitives::Serializable&& msg) {
+void StateMachine::set_current_message(const primitives::Serializable& msg) {
     m_write_start = m_msg_buffer.data() + (m_msg_buffer.size() - msg.size());
     m_msg_buffer.data() << msg;
 }
 
 
-void StateMachine::set_current_message(const messages::ProtocolMessage&& msg) {
+void StateMachine::set_current_message(const messages::ProtocolMessage& msg) {
     reset_write();
     m_write_start = &m_msg_buffer.back() - (messages::Header::static_size() + msg.size());
 
@@ -97,7 +105,7 @@ void StateMachine::set_current_message(const messages::ProtocolMessage&& msg) {
     m_write_start << header << msg;
 }
 
-void StateMachine::send_ack(std::uint32_t ack, bool last) {
+void StateMachine::send_ack(uint32_t ack, bool last) {
     char buff[primitives::ACK::static_size() + primitives::Bool::static_size()];
     buff << primitives::ACK(ack) << primitives::Bool(last);
     // Send buffer

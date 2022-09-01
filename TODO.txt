@@ -1,2 +1,4 @@
 Create Secure bool that uses bigger data type and default to true when a corruption occurs
 
+- See what happens when erors occur in 2, 0
+

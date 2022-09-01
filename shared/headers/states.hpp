@@ -127,6 +127,8 @@ namespace protocol::states {
 
             // Callbacks and utilities
             functor<void(const char*, const size_t len)> m_send_buffer;
+            functor<void(const char* buffer, primitives::Int8::Underlying_t type)> m_msg_received = [](const char*, primitives::Int8::Underlying_t) {};
+            functor<void()> sent_complete_handler = [](){};
         protected:
             // Common protocol variables for all states
             constexpr static size_t PROTOCOL_BUFFER_SIZE = 1024;
@@ -147,13 +149,16 @@ namespace protocol::states {
             void reset_read();
             void reset_write();
 
-            void set_current_message(const primitives::Serializable&& msg);
-            void set_current_message(const messages::ProtocolMessage&& msg);
+            void set_current_message(const primitives::Serializable& msg);
+            void set_current_message(const messages::ProtocolMessage& msg);
 
-            void send_ack(std::uint32_t ack, bool last);
+            void send_ack(uint32_t ack, bool last);
 
             void send_header_now();
             void send_body_now();
+
+            bool m_finished_sending = false;
+            bool m_has_queued_message = false;
         private:
             State* const INIT_STATE = &s_reading_header;
             State* m_current_state = INIT_STATE;

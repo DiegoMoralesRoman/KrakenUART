@@ -33,10 +33,10 @@ const bool ___init = []() -> bool {
 
     // Serialization
 template<>
-___impl::SerializableContinuation<char*>&& ___impl::SerializableContinuation<char*>::operator<<(const Serializable &ser) {
+___impl::SerializableContinuation<char*> ___impl::SerializableContinuation<char*>::operator<<(const Serializable &ser) {
     ser.serialize(buffer + cum_offset);
     cum_offset += ser.size();
-    return std::move(*this);
+    return *this;
 }
 
 
@@ -47,10 +47,10 @@ ___impl::SerializableContinuation<char*> protocol::primitives::operator<<(char* 
 
     // Deserialization
 template<>
-___impl::SerializableContinuation<const char*>&& ___impl::SerializableContinuation<const char*>::operator>>(Serializable &ser) {
+___impl::SerializableContinuation<const char*> ___impl::SerializableContinuation<const char*>::operator>>(Serializable &ser) {
     ser.deserialize(buffer + cum_offset);
     cum_offset += ser.size();
-    return std::move(*this);
+    return *this;
 }
 
 ___impl::SerializableContinuation<const char*> protocol::primitives::operator>>(const char *buffer, Serializable &ser) {

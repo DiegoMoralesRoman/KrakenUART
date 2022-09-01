@@ -22,6 +22,7 @@ State* WaitingBodyACK::parse_byte(const char t_byte) {
 
         switch (ack) {
             case messages::BODY_ACK: // Body received correctly (go back to reading header)
+                m_state_machine->m_finished_sending = true;
                 return &m_state_machine->s_reading_header;
                 break;
             case messages::BODY_NACK: // Body invalid (send again)

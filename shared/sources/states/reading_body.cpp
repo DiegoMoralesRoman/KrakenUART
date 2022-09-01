@@ -2,9 +2,6 @@
 
 using namespace protocol::states;
 
-// -- DEBUG --
-#include <iostream>
-
 void ReadingBody::on_enter() {
     ack_read_pending = true;
     m_state_machine->reset_read();
@@ -61,6 +58,9 @@ State* ReadingBody::parse_byte(const char t_byte) {
         primitives::Checksum::Underlying_t calculated_checksum = uahruart::utils::calculate_hash(m_state_machine->m_msg_buffer.data(), m_body_len);
 
         if (static_cast<primitives::Checksum::Underlying_t>(checksum) == calculated_checksum) { // Valid checksum send body ACK
+            // Send messages up
+            m_state_machine->m_msg_received(m_state_machine->m_msg_buffer.data(), m_message_type);
+
             m_state_machine->send_ack(messages::BODY_ACK, true);
             return &m_state_machine->s_reading_header;
         } else { // Invalid checksum send body NACK

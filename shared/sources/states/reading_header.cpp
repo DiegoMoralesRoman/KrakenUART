@@ -1,10 +1,6 @@
 #include "../../headers/states.hpp"
 #include "../../headers/messages.hpp"
 
-// -- DEBUG --
-#include <iostream>
-// -- DEBUG --
-
 using namespace protocol::states;
 
 void ReadingHeader::on_enter() {
@@ -13,7 +9,7 @@ void ReadingHeader::on_enter() {
 }
 
 void ReadingHeader::on_exit() {
-    
+    sent_nack = false;
 }
 
 
