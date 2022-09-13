@@ -9,7 +9,10 @@ namespace protocol::messages {
     enum Types : uint8_t {
         // Protocol messages
         HEADER,
-        ADMIN
+        ADMIN,
+        // RMI messages
+        RMICALL,
+        RMIRETURN
 
         // Custom messages
     };
@@ -96,6 +99,34 @@ namespace protocol::messages {
     // ==================================================
     // RMI messages
     // ==================================================
+    using RMIArg = primitives::Int16;
+    class RMICall : public ProtocolMessage {
+        public:
+            primitives::Int32 UUID;
+            primitives::Int32 call_hash;
+            RMIArg arg;
+            
+
+            virtual size_t size() const override {return UUID.size() + call_hash.size() + arg.size();}
+            virtual char* serialize(char* buffer) const override;
+            virtual const char* deserialize(const char* buffer) override;
+
+            virtual uint8_t type() const override {return RMICALL;}
+    };
+
+    class RMIReturn : public ProtocolMessage {
+        public:
+            primitives::Int32 UUID;
+            RMIArg ret_value;
+            primitives::Bool ok;
+
+            virtual size_t size() const override {return UUID.size() + ret_value.size() + ok.size();}
+            virtual char* serialize(char* buffer) const override;
+            virtual const char* deserialize(const char* buffer) override;
+
+            virtual uint8_t type() const override {return RMIRETURN;}
+    };
+
 
     // ==================================================
     // Custom messages

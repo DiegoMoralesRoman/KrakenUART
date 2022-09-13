@@ -44,3 +44,23 @@ const char* Admin::deserialize(const char* buffer) {
     return buffer >> ack;
 }
 
+// ==================================================
+// RMI
+// ==================================================
+// Rmi call
+char* RMICall::serialize(char *buffer) const {
+    return buffer << UUID << call_hash << arg;
+}
+
+const char* RMICall::deserialize(const char *buffer) {
+    return buffer >> UUID >> call_hash >> arg;
+}
+
+// Rmi return
+char* RMIReturn::serialize(char* buffer) const {
+    return buffer << UUID << ret_value << ok;
+}
+
+const char* RMIReturn::deserialize(const char* buffer) {
+    return buffer >> UUID >> ret_value >> ok;
+}

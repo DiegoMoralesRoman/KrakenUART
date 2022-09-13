@@ -264,6 +264,6 @@ namespace protocol::states {
             friend ReadingBody;
             friend ReadingTrailing;
     };
-};
+}
 
 #endif // STATES_HPP
