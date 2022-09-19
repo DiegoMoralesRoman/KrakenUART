@@ -47,7 +47,6 @@ void sm_send_bytes(const char* msg, size_t len) {
 
 void sm2_send_bytes(const char* msg, size_t len) {
     std::cout << "\033[32mFROM SM2:\033[0m " << std::hex;
-
     // CORRUPT MESSAGE
     bool fail = false;
     if (sm2_fail_message-- == 0) {
@@ -89,7 +88,35 @@ void sm2_reader() {
     }
 }
 
+#include "rmi.hpp"
+
+void fun1(int a) {
+    std::cout << "Con 1 argumento: " << a << '\n';
+}
+
+void fun2(int a, int b) {
+    std::cout << "Con 2 argumentos: " << a << ", " << b << '\n';
+}
+
+void fun3(int a, int b, int c) {
+    std::cout << "Con 3 argumentos: " << a << ", " << b << ", " << c << '\n';
+}
+
 int main() {
+
+    protocol::rmi::FunctionContainer<void, int> container;
+    int args[] = {14, 69, 420};
+
+    container.register_method(123, std::function(fun1));
+    container.register_method(456, std::function(fun2));
+    container.register_method(789, std::function(fun3));
+
+    container.call(123, args);
+    container.call(456, args);
+    container.call(789, args);
+
+    return 0;
+
     sm2.m_msg_received = [](const char* buff, protocol::primitives::Int8::Underlying_t type) {
         std::cout << "Message of type: " << (uint32_t)type << '\n';
         switch (type) {

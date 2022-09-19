@@ -105,7 +105,6 @@ namespace protocol::messages {
             primitives::Int32 UUID;
             primitives::Int32 call_hash;
             RMIArg arg;
-            
 
             virtual size_t size() const override {return UUID.size() + call_hash.size() + arg.size();}
             virtual char* serialize(char* buffer) const override;
