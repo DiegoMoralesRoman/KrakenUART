@@ -24,7 +24,8 @@ namespace protocol::messages {
         BODY_ACK = uahruart::utils::hash_uint32(2),
         BODY_NACK = uahruart::utils::hash_uint32(3),
         UNDEF_ACK = uahruart::utils::hash_uint32(4),
-        CORR_ACK = uahruart::utils::hash_uint32(5)
+        CORR_ACK = uahruart::utils::hash_uint32(5),
+        FIRST_MSG = uahruart::utils::hash_uint32(6)
     };
 
 

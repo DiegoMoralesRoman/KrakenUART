@@ -85,7 +85,6 @@ namespace protocol::rmi {
         };
     }(std::make_index_sequence<MAX_ARGS + 1>());
 
-
 // End of pain
 }
 

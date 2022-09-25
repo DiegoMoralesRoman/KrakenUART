@@ -112,6 +112,22 @@ namespace protocol::states {
             virtual void on_exit();
     };
 
+    class IgnoringN : public State {
+        public:
+            IgnoringN(StateMachine* state_machine)
+                : State{state_machine} {}
+
+            virtual State* parse_byte(const char t_byte);
+            virtual void on_enter();
+            virtual void on_exit();
+
+            void ignore(size_t ammount, State* return_state);
+
+        private:
+            size_t to_ignore = 0;
+            State* return_state;
+    };
+
     /**
      * @brief State machine containing all protocol states
      *
@@ -134,13 +150,13 @@ namespace protocol::states {
              * @param message Message to send
              * @details This operation will be immediate so if the state machine is currently sending a message it will be corrpted (use with caution).
              */
-            void send_message(const primitives::Serializable&& serializable);
+            void send_message(const primitives::Serializable& serializable);
             /**
              * @brief Starts to send a message to the connected device
              * @param message Message to send (protocol message, the header will be added automatically)
              * @details This operation will be immediate so if the state machine is currently sending a message it will be corrpted (use with caution).
              */
-            void send_message(const messages::ProtocolMessage&& message);
+            void send_message(const messages::ProtocolMessage& message);
 
             // Callbacks and utilities
             /**
@@ -194,6 +210,7 @@ namespace protocol::states {
             WaitingBodyACK s_waiting_body_ack = WaitingBodyACK(this);
             ReadingBody s_reading_body = ReadingBody(this);
             ReadingTrailing s_reading_trailing = ReadingTrailing(this);
+            IgnoringN s_ignoring_n = IgnoringN(this);
 
             // Utility methods
             /**
@@ -243,7 +260,13 @@ namespace protocol::states {
              * @brief Flag that is true when this state machine has priority to sending a message in case of collision
              * TODO: finish collision avoidance implementation
              */
-            bool m_has_send_priority = false;
+            
+        public: bool m_has_send_priority = false; protected:
+
+            /**
+             * @brief Indicates if the header of a message is being sent
+             */
+            bool comm_started = false;
         private:
             /**
              * @brief Initial state (set on construction and reset)
@@ -263,6 +286,7 @@ namespace protocol::states {
             friend WaitingBodyACK;
             friend ReadingBody;
             friend ReadingTrailing;
+            friend IgnoringN;
     };
 }
 

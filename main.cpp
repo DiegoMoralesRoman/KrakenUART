@@ -104,18 +104,18 @@ void fun3(int a, int b, int c) {
 
 int main() {
 
-    protocol::rmi::FunctionContainer<void, int> container;
-    int args[] = {14, 69, 420};
+    // protocol::rmi::FunctionContainer<void, int> container;
+    // int args[] = {14, 69, 420};
 
-    container.register_method(123, std::function(fun1));
-    container.register_method(456, std::function(fun2));
-    container.register_method(789, std::function(fun3));
+    // container.register_method(123, std::function(fun1));
+    // container.register_method(456, std::function(fun2));
+    // container.register_method(789, std::function(fun3));
 
-    container.call(123, args);
-    container.call(456, args);
-    container.call(789, args);
+    // container.call(123, args);
+    // container.call(456, args);
+    // container.call(789, args);
 
-    return 0;
+    // return 0;
 
     sm2.m_msg_received = [](const char* buff, protocol::primitives::Int8::Underlying_t type) {
         std::cout << "Message of type: " << (uint32_t)type << '\n';
@@ -159,7 +159,11 @@ int main() {
         std::cout << "Mensaje desde sm1" << std::endl;
     };
 
-    sm.send_message(std::move(msg));
+    sm.m_has_send_priority = true;
+    sm2.m_has_send_priority = false;
+    sm.send_message(msg);
+    msg.ack = 456;
+    sm2.send_message(msg);
     
     // for (size_t i = 0; i < msg.size(); i++) {
     //     sm.parse_byte(buff[i]);
@@ -167,6 +171,7 @@ int main() {
 
     sm1_worker.join();
     sm2_worker.join();
+
 
     return 0;
 }

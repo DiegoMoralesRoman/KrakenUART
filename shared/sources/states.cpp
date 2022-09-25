@@ -32,23 +32,26 @@ void StateMachine::parse_byte(const char t_byte) {
     }
 }
 
-void StateMachine::send_message(const primitives::Serializable &&serializable) {
+void StateMachine::send_message(const primitives::Serializable &serializable) {
     m_current_state = &s_waiting_header_ack;
-    set_current_message(std::move(serializable));
-    send_header_now();
+    set_current_message(serializable);
+
+    send_ack(messages::FIRST_MSG, false);
+    comm_started = true;
+    m_send_buffer(m_write_start, messages::Header::static_size());
 }
 
-void StateMachine::send_message(const messages::ProtocolMessage&& message) {
+void StateMachine::send_message(const messages::ProtocolMessage& message) {
     m_current_state = &s_waiting_header_ack;
-    set_current_message(std::move(message));
-    send_header_now();
+    set_current_message(message);
+
+    send_ack(messages::FIRST_MSG, false);
+    comm_started = true;
+    m_send_buffer(m_write_start, messages::Header::static_size());
 }
 
 // Utility methods
 void StateMachine::send_header_now() {
-    //m_current_state = &s_waiting_header_ack;
-    
-    // Send header
     send_ack(messages::UNDEF_ACK, false);
     m_send_buffer(m_write_start, messages::Header::static_size());
 }
