@@ -30,11 +30,14 @@ class Buff : public protocol::base128::Stream {
 };
 
 int main() {
-    protocol::primitives::String value = "Kekos, esto funciona bastante bien por lo que estoy viendo, ahora lo único que tengo que hacer es que funcione el encoding";
+    protocol::primitives::Int32 value1 = 123456789;
+    protocol::primitives::Int32 value2 = 87654321;
     Buff b;
-    b << value;
+    b << value1 << value2;
     b.position = 0;
-    decltype(value) other;
-    b >> other;
-    std::cout << other.string;
+    decltype(value1) other1;
+    decltype(value2) other2;
+    b.flush();
+    b >> other1 >> other2;
+    std::cout << (uint32_t)other1 << ' ' << (uint32_t)other2 << '\n';
 }
