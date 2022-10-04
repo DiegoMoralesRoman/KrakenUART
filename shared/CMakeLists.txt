@@ -1,5 +1,5 @@
-set(HEADERS primitives.hpp messages.hpp states.hpp utils.hpp)
-set(SOURCES primitives.cpp messages.cpp states.cpp utils.cpp)
+set(HEADERS primitives.hpp messages.hpp states.hpp utils.hpp base128.hpp)
+set(SOURCES primitives.cpp messages.cpp states.cpp utils.cpp base128.cpp)
 
 list(TRANSFORM HEADERS PREPEND headers/)
 list(TRANSFORM SOURCES PREPEND sources/)

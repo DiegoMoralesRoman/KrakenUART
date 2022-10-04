@@ -21,11 +21,9 @@
 #include <stdint.h>
 
 namespace uahruart {
-    // !IMPORTANT
-    // Protocol types definition. 
-    // This types have to be defined according to the architecture of the processor
-    // ----------
     namespace utils {
+
+
         // Functions
         constexpr uint32_t hash_uint32(const uint32_t value) {
             uint32_t tmp = value;

@@ -1,177 +1,40 @@
 #include <iostream>
 
-#include "shared/headers/primitives.hpp"
-#include "shared/headers/messages.hpp"
-#include "shared/headers/states.hpp"
+#include "shared/headers/protocol.hpp"
 
-#include <thread>
-#include <mutex>
-#include <queue>
-
-// FAIL TEST
-size_t sm1_fail_message = -1;
-size_t sm2_fail_message = -1;
-// ---------
-
-std::queue<uint8_t> sm_queue, sm2_queue;
-
-std::mutex sm_mtx, sm2_mtx;
-
-protocol::states::StateMachine sm;
-protocol::states::StateMachine sm2;
-
-void sm_send_bytes(const char* msg, size_t len) {
-    std::cout << "\033[33mFROM SM1:\033[0m " << std::hex;
-
-    // CORRUPT MESSAGE
-    bool fail = false;
-    if (sm1_fail_message-- == 0) {
-        std::cout << "\nCORRUPTING MESSAGE\n";
-        fail = true;
-    }
-
-
-    for (size_t i = 0; i < len; i++) {
-        if (fail) {
-            fail = false;
-            sm2_queue.push(~msg[i]);
-        } else {
-            sm2_queue.push(msg[i]);
+class Buff : public protocol::base128::Stream {
+    public:
+    virtual void read(char* buffer, const size_t ammount) override {
+        std::cout << "Reading ";
+        for (size_t i = 0; i < ammount; i++) {
+            std::cout << static_cast<int>(m_buffer[position]) << ' ';
+            buffer[i] = m_buffer[position++];
         }
-        std::cout << static_cast<uint16_t>(msg[i]) << ' ';
-    }
-    std::cout << std::dec << '\n';
-
-    sm2_mtx.unlock();
-}
-
-void sm2_send_bytes(const char* msg, size_t len) {
-    std::cout << "\033[32mFROM SM2:\033[0m " << std::hex;
-    // CORRUPT MESSAGE
-    bool fail = false;
-    if (sm2_fail_message-- == 0) {
-        std::cout << "\nCORRUPTING MESSAGE\n";
-        fail = true;
+        std::cout << '\n';
     }
 
-    for (size_t i = 0; i < len; i++) {
-        if (fail) {
-            fail = false;
-            sm_queue.push(~msg[i]);
-        } else {
-            sm_queue.push(msg[i]);
+    virtual void write(const char* buffer, const size_t len) override {
+        std::cout << "Writing ";
+        for (size_t i = 0; i < len; i++) {
+            m_buffer[position++] = buffer[i];
+            std::cout << static_cast<int>(m_buffer[position - 1]) << ' ';
         }
-        std::cout << static_cast<uint16_t>(msg[i]) << ' ';
+        std::cout << '\n';
     }
-    std::cout << std::dec << '\n'; 
+    uint8_t m_buffer[128] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    size_t position = 0;
 
-    sm_mtx.unlock();
-}
-
-void sm_reader() {
-    while (true) {
-        sm_mtx.lock();
-        while (!sm_queue.empty()) {
-            sm.parse_byte(sm_queue.front());
-            sm_queue.pop();
-        }
+    virtual void flush() override {
+        std::cout << "Flushing buffer\n";
     }
-}
-
-void sm2_reader() {
-    while (true) {
-        sm2_mtx.lock();
-        while (!sm2_queue.empty()) {
-            sm2.parse_byte(sm2_queue.front());
-            sm2_queue.pop();
-        }
-    }
-}
-
-#include "rmi.hpp"
-
-void fun1(int a) {
-    std::cout << "Con 1 argumento: " << a << '\n';
-}
-
-void fun2(int a, int b) {
-    std::cout << "Con 2 argumentos: " << a << ", " << b << '\n';
-}
-
-void fun3(int a, int b, int c) {
-    std::cout << "Con 3 argumentos: " << a << ", " << b << ", " << c << '\n';
-}
+};
 
 int main() {
-
-    // protocol::rmi::FunctionContainer<void, int> container;
-    // int args[] = {14, 69, 420};
-
-    // container.register_method(123, std::function(fun1));
-    // container.register_method(456, std::function(fun2));
-    // container.register_method(789, std::function(fun3));
-
-    // container.call(123, args);
-    // container.call(456, args);
-    // container.call(789, args);
-
-    // return 0;
-
-    sm2.m_msg_received = [](const char* buff, protocol::primitives::Int8::Underlying_t type) {
-        std::cout << "Message of type: " << (uint32_t)type << '\n';
-        switch (type) {
-            case protocol::messages::ADMIN:
-                protocol::messages::Admin msg;
-                buff >> msg;
-                std::cout << "Value: " << (uint32_t)msg.ack << '\n';
-                break;
-        }
-    };
-
-    sm.m_msg_received = sm2.m_msg_received;
-
-    // Print ack
-    std::cout << "ACKs:\n" << std::hex;
-
-    std::cout << "HEADER_ACK: " << protocol::messages::HEADER_ACK << '\n';
-    std::cout << "HEADER_NACK: " << protocol::messages::HEADER_NACK << '\n';
-    std::cout << "BODY_ACK: " << protocol::messages::BODY_ACK << '\n';
-    std::cout << "BODY_NACK: " << protocol::messages::BODY_NACK << '\n';
-    std::cout << "UNDEF_ACK: " << protocol::messages::UNDEF_ACK << '\n';
-    std::cout << "CORR_ACK: " << protocol::messages::CORR_ACK << '\n';
-
-    sm.m_send_buffer = sm_send_bytes;
-    sm2.m_send_buffer = sm2_send_bytes;
-
-    auto sm1_worker = std::thread(sm_reader);
-    auto sm2_worker = std::thread(sm2_reader);
-
-    protocol::messages::Admin msg;
-    msg.ack = 123;
-
-    sm.sent_complete_handler = [msg]() {
-        std::cout << "Mensaje enviado correctamente" << std::endl;
-        //sm.send_message(std::move(msg));
-        sm2.send_message(std::move(msg));
-    };
-
-    sm2.sent_complete_handler = []() {
-        std::cout << "Mensaje desde sm1" << std::endl;
-    };
-
-    sm.m_has_send_priority = true;
-    sm2.m_has_send_priority = false;
-    sm.send_message(msg);
-    msg.ack = 456;
-    sm2.send_message(msg);
-    
-    // for (size_t i = 0; i < msg.size(); i++) {
-    //     sm.parse_byte(buff[i]);
-    // }
-
-    sm1_worker.join();
-    sm2_worker.join();
-
-
-    return 0;
+    protocol::primitives::String value = "Kekos, esto funciona bastante bien por lo que estoy viendo, ahora lo único que tengo que hacer es que funcione el encoding";
+    Buff b;
+    b << value;
+    b.position = 0;
+    decltype(value) other;
+    b >> other;
+    std::cout << other.string;
 }
