@@ -44,6 +44,10 @@ __always_inline T min(T a, T b) {
 // Base128 stream implementation
 #include <iostream>
 void Base128Stream::read(char *buff, const size_t ammount) {
+    if (last_action != READING)
+        flush();
+    last_action = READING;
+
     size_t encoded_size = (ammount * 8) / 7;
 
     uint8_t relative_index = m_bytes_rw % 8;
@@ -91,7 +95,7 @@ void Base128Stream::read(char *buff, const size_t ammount) {
         // Subtrace 0x21 from all bytes
         decode(buff);
     }
-    last_byte_read = m_tmp_buffer[relative_index] + 0x21;
+    // last_byte_read = m_tmp_buffer[relative_index] + 0x21;
     m_bytes_rw += 8 * full_blocks;
 
     // Copy remaining data to memory
@@ -107,7 +111,7 @@ void Base128Stream::read(char *buff, const size_t ammount) {
     m_bytes_pending_processing = remaining;
     decode(buff);
     m_bytes_rw += remaining;
-    last_byte_read = m_tmp_buffer[m_bytes_rw % 8] + 0x21;
+    // last_byte_read = m_tmp_buffer[m_bytes_rw % 8] + 0x21;
 
     // Update flags
     prev_grp_included = prev_grp_included_flag;
@@ -138,6 +142,8 @@ void Base128Stream::decode(char* buffer) {
         std::cout << "end: " << static_cast<int>(end_data + 0x21) << ", start: " << static_cast<int>(start_data + 0x21) << ", ";
         std::cout << "Decoded value: " << static_cast<int>(buffer[i]) << ": " << buffer[i] << '\n'; 
         i += m_bytes_rw;
+
+        last_byte_read = end_data + 0x21;
     }
 }
 
@@ -215,8 +221,12 @@ void Base128Stream::flush() {
             break;
         }
     }
+    // Reset state
     m_bytes_rw = 0;
     m_last_7bit_pos = 0;
     m_buff_pos = 0;
+    prev_grp_included = false;
+
+
     m_conn_stream->flush();
 }
