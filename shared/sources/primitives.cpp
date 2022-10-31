@@ -30,7 +30,7 @@ const bool ___init = []() -> bool {
 // ==================================================
 // Primitive serialization implementation
 // ==================================================
-void Int32::serialize(protocol::base128::Stream& stream) const {
+void Int32::serialize(protocol::serial::Stream& stream) const {
     if (is_big_endian) {
         stream.write(reinterpret_cast<const char*>(&m_value), 4);
     } else {
@@ -44,7 +44,7 @@ void Int32::serialize(protocol::base128::Stream& stream) const {
     }
 }
 
-void Int32::deserialize(protocol::base128::Stream& stream) {
+void Int32::deserialize(protocol::serial::Stream& stream) {
     if (is_big_endian)
         stream.read(reinterpret_cast<char*>(&m_value), 4);
     else {
@@ -59,7 +59,7 @@ void Int32::deserialize(protocol::base128::Stream& stream) {
 }
 
 // Int16
-void Int16::serialize(protocol::base128::Stream& stream) const {
+void Int16::serialize(protocol::serial::Stream& stream) const {
     if (is_big_endian)
         stream.write(reinterpret_cast<const char*>(&m_value), 2);
     else {
@@ -71,7 +71,7 @@ void Int16::serialize(protocol::base128::Stream& stream) const {
     }
 }
 
-void Int16::deserialize(base128::Stream &stream) {
+void Int16::deserialize(serial::Stream &stream) {
     if (is_big_endian) {
         stream.read(reinterpret_cast<char*>(&m_value), 2);
     } else {
@@ -84,20 +84,20 @@ void Int16::deserialize(base128::Stream &stream) {
 }
 
 // // Int8
-void Int8::serialize(base128::Stream &stream) const {
+void Int8::serialize(serial::Stream &stream) const {
     stream.write(reinterpret_cast<const char*>(&m_value), 1);
 }
 
-void Int8::deserialize(base128::Stream &stream) {
+void Int8::deserialize(serial::Stream &stream) {
     stream.read(reinterpret_cast<char*>(&m_value), 1);
 }
 
-void String::serialize(base128::Stream &stream) const {
+void String::serialize(serial::Stream &stream) const {
     stream << Size(string.length());
     stream.write(string.c_str(), string.length());
 }
 
-void String::deserialize(base128::Stream &stream) {
+void String::deserialize(serial::Stream &stream) {
     Size len;
     stream >> len;
     string = std::string(static_cast<size_t>(len), 0);

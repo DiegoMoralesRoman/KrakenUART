@@ -9,22 +9,22 @@ using namespace protocol::messages;
 // ==================================================
 
 #include <iostream>
-void Header::serialize(protocol::base128::Stream& stream) const {
+void Header::serialize(protocol::serial::Stream& stream) const {
 
 }
 
-void Header::deserialize(protocol::base128::Stream& stream) {
+void Header::deserialize(protocol::serial::Stream& stream) {
 
 }
 
 // ==================================================
 // Admin
 // ==================================================
-void Admin::serialize(protocol::base128::Stream& stream) const {
+void Admin::serialize(protocol::serial::Stream& stream) const {
     stream << ack;
 } 
 
-void Admin::deserialize(protocol::base128::Stream& stream) {
+void Admin::deserialize(protocol::serial::Stream& stream) {
     stream >> ack;
 }
 

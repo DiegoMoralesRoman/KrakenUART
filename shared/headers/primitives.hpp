@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "base128.hpp"
+#include "serial.hpp"
 
 namespace protocol::primitives {
 
@@ -16,7 +16,7 @@ namespace protocol::primitives {
 
         // --- Integer types ---
 
-    class Int32 : public base128::Serializable {
+    class Int32 : public serial::Serializable {
         public:
             using Underlying_t = uint32_t;
             // Utility constructors
@@ -30,8 +30,8 @@ namespace protocol::primitives {
             static constexpr size_t static_size() {return 4;}
             virtual size_t size() const override {return static_size();}
 
-            virtual void serialize(base128::Stream& stream) const override;
-            virtual void deserialize(base128::Stream& stream) override;
+            virtual void serialize(serial::Stream& stream) const override;
+            virtual void deserialize(serial::Stream& stream) override;
         private:
             uint32_t m_value = 0;
     };
@@ -39,7 +39,7 @@ namespace protocol::primitives {
     using ACK = Int32;
     using Checksum = Int32;
 
-    class Int16 : public base128::Serializable {
+    class Int16 : public serial::Serializable {
         public:
             using Underlying_t = uint16_t;
             // Utility constructors
@@ -52,13 +52,13 @@ namespace protocol::primitives {
             static constexpr size_t static_size() {return 2;}
             virtual size_t size() const override {return static_size();}
 
-            virtual void serialize(base128::Stream& stream) const override;
-            virtual void deserialize(base128::Stream& stream) override;
+            virtual void serialize(serial::Stream& stream) const override;
+            virtual void deserialize(serial::Stream& stream) override;
         private:
             uint16_t m_value = 0;
     };
 
-    class Int8 : public base128::Serializable {
+    class Int8 : public serial::Serializable {
         public:
             using Underlying_t = uint8_t;
             // Utility constructors
@@ -71,14 +71,14 @@ namespace protocol::primitives {
             static constexpr size_t static_size() {return 1;}
             virtual size_t size() const override {return static_size();}
 
-            virtual void serialize(base128::Stream& stream) const override;
-            virtual void deserialize(base128::Stream& stream) override;
+            virtual void serialize(serial::Stream& stream) const override;
+            virtual void deserialize(serial::Stream& stream) override;
         private:
             uint8_t m_value = 0;
     };
         
         // --- String types
-    class String : public base128::Serializable {
+    class String : public serial::Serializable {
         public:
             using Underlying_t = std::string;
             // Utility constructors
@@ -89,8 +89,8 @@ namespace protocol::primitives {
             // Virtual methods overloading
             virtual size_t size() const override {return string.length() + Int32::static_size();}
 
-            virtual void serialize(base128::Stream& stream) const override;
-            virtual void deserialize(base128::Stream& stream) override;
+            virtual void serialize(serial::Stream& stream) const override;
+            virtual void deserialize(serial::Stream& stream) override;
     };
 
     // Boolean constants
