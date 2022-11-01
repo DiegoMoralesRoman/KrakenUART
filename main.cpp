@@ -41,17 +41,11 @@ int main() {
     protocol::serial::Base128Stream base128stream;
     Buff b;
     base128stream.set_connection_stream(&b);
+    
+    protocol::primitives::String str = "Indiesaurio";
+    base128stream << str;
+    protocol::primitives::String other_str;
+    base128stream >> other_str;
 
-    protocol::primitives::Int32 n1 = 123456789;
-    protocol::primitives::Int32 n2 = 987654321;
-    protocol::primitives::Int32 n3 = 123;
-    base128stream << n1 << n2;
-    base128stream.flush();
-    base128stream << n3;
-
-    protocol::primitives::Int32 other_n1, other_n2, other_n3;
-    base128stream >> other_n1 >> other_n2;
-    base128stream.flush();
-    base128stream >> other_n3;
-    std::cout << "Output: " << other_n1 << ", " << other_n2 << ", " << other_n3 << '\n';
+    std::cout << "Output: " << other_str.string << '\n';
 }

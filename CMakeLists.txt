@@ -12,6 +12,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
 add_subdirectory(shared)
 
 add_compile_options(-Wall)
-add_executable(ProtocolV3 main.cpp rmi.cpp)
+add_executable(ProtocolV3 main.cpp)
 target_link_libraries(ProtocolV3 protocol -lpthread)
 

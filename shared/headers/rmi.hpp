@@ -1,12 +1,12 @@
 #ifndef RMI_HPP
 #define RMI_HPP
 
-#include <map> // TODO: account for when uploading code to arduino
+#include <map>
 #include <array>
 #include <functional>
 #include <stdint.h>
 
-namespace protocol::rpc {
+namespace protocol::rmi {
     // I'm sorry for whoever has to maintain this code. It shouldn't have been like this, but they forced my hand into creating this monstrosity
     constexpr uint8_t MAX_ARGS = 3;
 

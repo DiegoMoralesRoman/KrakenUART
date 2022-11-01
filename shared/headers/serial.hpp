@@ -72,8 +72,7 @@ namespace protocol::serial {
                 WRITING
             } last_action = UNDEFINED;
             // Base128 encoding state
-            char m_tmp_buffer[7] = {0};
-            char padding = '=';
+            char m_tmp_buffer[8] = {0};
 
             uint8_t m_buff_pos = 0;
             size_t m_bytes_rw = 0;
