@@ -61,8 +61,17 @@ void Base128Stream::read(char *buff, const size_t ammount) {
     
 
     const auto read_bytes = [this, relative_index](uint8_t from_start, uint8_t until_end) -> void {
-        this->m_conn_stream->read(this->m_tmp_buffer + ((relative_index + prev_grp_included) % 8), until_end - prev_grp_included);
-        this->m_conn_stream->read(this->m_tmp_buffer, from_start + prev_grp_included); // TODO: add one 
+        // Change variables to account for prev_grp_included variable
+        // if (prev_grp_included) {
+        //     if (from_start) {
+        //         from_start--;
+        //     } else {
+        //         until_end--;
+        //     }
+        // }
+        if (until_end)
+            this->m_conn_stream->read(this->m_tmp_buffer + ((relative_index + prev_grp_included) % 8), until_end - prev_grp_included);
+        this->m_conn_stream->read(this->m_tmp_buffer, from_start); 
         for (uint8_t i = 0; i < 8; i++) this->m_tmp_buffer[i] -= 0x21;
     };
 
@@ -74,12 +83,12 @@ void Base128Stream::read(char *buff, const size_t ammount) {
     
     // Read full blocks
     m_bytes_pending_processing = 8;
-    uint8_t from_start = 8 - relative_index;
-    uint8_t until_end = relative_index;
+    uint8_t until_end = 8 - relative_index;
+    uint8_t from_start = relative_index + prev_grp_included;
     for (size_t i = 0; i < full_blocks; i++) {
         // Copy data into buffer
         read_bytes(from_start, until_end); 
-        decode(buff + 8 * i);
+        decode(buff + 7 * i);
     }
     // last_byte_read = m_tmp_buffer[relative_index] + 0x21;
 
@@ -94,7 +103,7 @@ void Base128Stream::read(char *buff, const size_t ammount) {
 
     // Flush data
     m_bytes_pending_processing = remaining;
-    decode(buff + 8 * full_blocks);
+    decode(buff + 7 * full_blocks);
     m_bytes_rw += remaining;
     // last_byte_read = m_tmp_buffer[m_bytes_rw % 8] + 0x21;
 
@@ -105,6 +114,7 @@ void Base128Stream::read(char *buff, const size_t ammount) {
     m_bytes_rw += 8 * full_blocks;
 }
 
+// FIXME: 1B offset when reading multiple serializable values
 void Base128Stream::decode(char* buffer) {
     std::cout << "Last: " << prev_grp_included << '\n';
     uint8_t decoded_size = (m_bytes_pending_processing * 7) / 8;

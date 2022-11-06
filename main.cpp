@@ -42,11 +42,11 @@ int main() {
     Buff b;
     base128stream.set_connection_stream(&b);
     
-    protocol::primitives::String str = "Kekos";
+    protocol::primitives::String str = "Kekosita";
     protocol::primitives::Int32 val1 = 123456789;
     base128stream << str << val1;
     protocol::primitives::String other_str;
     base128stream >> other_str >> val1;
 
-    std::cout << "Output: " << other_str.string << static_cast<uint32_t>(val1) << '\n';
+    std::cout << "Output: " << other_str.string << ", " << val1 << '\n';
 }
