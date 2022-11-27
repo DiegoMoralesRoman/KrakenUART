@@ -3,3 +3,4 @@
 #include "states.hpp"
 #include "utils.hpp"
 #include "serial.hpp"
+#include "protocol_states.hpp"

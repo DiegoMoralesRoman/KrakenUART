@@ -4,7 +4,7 @@
 
 class Buff : public protocol::serial::Stream {
     public:
-    virtual void read(char* buffer, const size_t ammount) override {
+    virtual size_t read(char* buffer, const size_t ammount) override {
         if (prev_writing) {
             std::cout << "Reseting buffer\n";
             position = 0;
@@ -17,6 +17,7 @@ class Buff : public protocol::serial::Stream {
             buffer[i] = m_buffer[position++];
         }
         std::cout << '\n';
+        return ammount;
     }
 
     virtual void write(const char* buffer, const size_t len) override {
@@ -38,15 +39,9 @@ class Buff : public protocol::serial::Stream {
 };
 
 int main() {
-    protocol::serial::Base128Stream base128stream;
     Buff b;
-    base128stream.set_connection_stream(&b);
-    
-    protocol::primitives::String str = "Kekosita";
-    protocol::primitives::Int32 val1 = 123456789;
-    base128stream << str << val1;
-    protocol::primitives::String other_str;
-    base128stream >> other_str >> val1;
-
-    std::cout << "Output: " << other_str.string << ", " << val1 << '\n';
+    ProtocolSM sm;
+    TestState test_s(&sm);
+    sm.set_state(&test_s);
+    sm.signal(0);
 }

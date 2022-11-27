@@ -8,23 +8,28 @@
 #include <stddef.h>
 
 namespace protocol::states {
+    template<typename Context>
     class StateMachine;
+
+    using Signal_t = unsigned char;
 
     /**
      * @brief Base class for all of the protocol states
      * @details All protocol states must derive from this class
      */
+    template<typename Context>
     class State {
         public:
-            State(StateMachine* state_machine)
+            State(StateMachine<Context>* state_machine)
                 : m_state_machine(state_machine) {}
             State() = delete;
+                
             /**
-             * @brief Sends a byte to the current state of the protocol
-             * 
-             * @param t_byte Byte to process
+             * @brief Signals the state of an event
+             * @param signal signal that has been sent
+             * @return State* to the next state
              */
-            virtual State* parse_byte(const char t_byte) = 0;
+            virtual State* signal(const Signal_t signal) = 0;
             /**
              * @brief Runs every time the state machine enters the state
              */
@@ -35,27 +40,29 @@ namespace protocol::states {
             virtual void on_exit() = 0;
 
         protected:
-            StateMachine* m_state_machine;
+            StateMachine<Context>* m_state_machine;
     };
 
-
-    // ==================================================
-    // Common protocol methods
-    // ==================================================
-    
-
-
-    // ==================================================
-    // States definitions
-    // ==================================================
 
     /**
      * @brief State machine containing all protocol states
      *
      */
+    template<typename Context>
     class StateMachine {
+        public:
+            ~StateMachine();
 
+            void signal(const Signal_t signal);
+            void set_state(State<Context>* state);
+            
+        private:
+            State<Context>* m_current_state = nullptr, *m_prev_state = nullptr;
+            Context m_ctx;
     };
 }
 
+#include "../sources/states.tcc"
+
 #endif // STATES_HPP
+

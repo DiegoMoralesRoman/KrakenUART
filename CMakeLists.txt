@@ -15,3 +15,7 @@ add_compile_options(-Wall)
 add_executable(ProtocolV3 main.cpp)
 target_link_libraries(ProtocolV3 protocol -lpthread)
 
+# Custom targets
+add_custom_target(run
+    COMMAND ./ProtocolV3
+    DEPENDS ./ProtocolV3)

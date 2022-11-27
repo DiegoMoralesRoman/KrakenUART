@@ -17,8 +17,10 @@ namespace protocol::serial {
              * 
              * @param buff Buffer to store the data
              * @param ammount Ammount of bytes to read
+             *
+             * @return Number of bytes read
              */
-            virtual void read(char* buff, const size_t ammount) = 0;
+            virtual size_t read(char* buff, const size_t ammount) = 0;
             /**
              * @brief Writes n bytes obtained from the passed buffer
              * 
@@ -34,7 +36,7 @@ namespace protocol::serial {
     };
 
     // ==================================================
-    // Base128 encoding and decoding
+    // Base128 encoding and decoding NOT IMPLEMENTED (AND NOT USED)
     // ==================================================
 
     // Base128 intermediate stream
@@ -47,7 +49,7 @@ namespace protocol::serial {
     class Base128Stream : public Stream {
         public:
             // Read and write methods
-            virtual void read(char* buff, const size_t ammount) override;
+            virtual size_t read(char* buff, const size_t ammount) override;
             virtual void write(const char* buff, size_t ammount) override;
             /**
              * @brief Flushes the stream (finished reading or finished writing the buffered data)

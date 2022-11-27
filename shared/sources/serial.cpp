@@ -19,7 +19,7 @@ Stream& protocol::serial::operator>>(Stream &stream, Serializable &serializable)
 }
 
 // ==================================================
-// Base 128 implementation
+// Base 128 implementation (NOT FINISHED)
 // ==================================================
 
 void Base128Stream::set_connection_stream(Stream *stream) {
@@ -43,7 +43,7 @@ __always_inline T min(T a, T b) {
 }
 // Base128 stream implementation
 #include <iostream>
-void Base128Stream::read(char *buff, const size_t ammount) {
+size_t Base128Stream::read(char *buff, const size_t ammount) {
     if (last_action != READING)
         flush();
     last_action = READING;
@@ -80,7 +80,7 @@ void Base128Stream::read(char *buff, const size_t ammount) {
     size_t full_blocks = encoded_size / 8;
     uint8_t remaining = encoded_size % 8;
    
-    
+    // FIXME: It's reading 1 byte less than what's neccessary for the decodification
     // Read full blocks
     m_bytes_pending_processing = 8;
     uint8_t until_end = 8 - relative_index;
@@ -111,7 +111,9 @@ void Base128Stream::read(char *buff, const size_t ammount) {
     if (prev_grp_included_flag && !prev_grp_included)
         --m_bytes_rw;
     prev_grp_included = prev_grp_included_flag;
-    m_bytes_rw += 8 * full_blocks;
+    m_bytes_rw += 7 * full_blocks;
+
+    return ammount;
 }
 
 // FIXME: 1B offset when reading multiple serializable values
