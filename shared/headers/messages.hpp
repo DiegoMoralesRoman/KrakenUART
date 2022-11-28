@@ -44,9 +44,10 @@ namespace protocol::messages {
      */
     class Header : public serial::Serializable {
         public:
-            virtual void serialize(serial::Stream& stream) const;
-            virtual void deserialize(serial::Stream& stream);
+            virtual void serialize(serial::Stream& stream) const override;
+            virtual void deserialize(serial::Stream& stream) override;
         private:
+            // TODO: add size and checksum variables
     };
 
 

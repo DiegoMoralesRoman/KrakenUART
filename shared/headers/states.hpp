@@ -33,7 +33,7 @@ namespace protocol::states {
             /**
              * @brief Runs every time the state machine enters the state
              */
-            virtual void on_enter() = 0;
+            virtual State* on_enter() = 0;
             /**
              * @brief Runs every time the state machine exits the state
              */

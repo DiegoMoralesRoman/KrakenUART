@@ -52,7 +52,7 @@ namespace protocol::states {
         public:
             Idle(ProtocolSM* sm) : ProtocolState{sm} {}
 
-            void on_enter() override;
+            State* on_enter() override;
             void on_exit() override;
             ProtocolState* signal(const Signal_t signal) override;
     };
@@ -65,25 +65,41 @@ namespace protocol::states {
         public:
             ReadingHeader(ProtocolSM* sm) : ProtocolState{sm} {}
 
-            void on_enter() override;
+            State* on_enter() override;
             void on_exit() override;
             ProtocolState* signal(const Signal_t signal) override;
     };
 
     // State machine context
     namespace ___impl {
+        struct ProtocolSMContext;
+
+        class ProtocolStream : public serial::Stream {
+            public:
+                ProtocolStream(ProtocolSMContext* ctx)
+                    : ctx(ctx) {}
+
+                void write(const char *buff, size_t ammount) override;
+                size_t read(char *buff, const size_t ammount) override;
+                void flush() override;
+
+            private:
+                ProtocolSMContext* ctx;
+        };
+
         struct ProtocolSMContext {
             ProtocolSMContext(ProtocolSM* sm);
 
             // Global state variables
             char last_rcv_byte = 0;
-            serial::Stream* conn_stream;
 
             // States
             Idle s_idle;
             ReadingHeader s_reading_header;
             
             // Other variables
+            ProtocolStream stream = ProtocolStream(this);
+            ProtocolSM* sm;
         };
     }
 }

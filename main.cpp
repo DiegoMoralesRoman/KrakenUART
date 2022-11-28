@@ -19,6 +19,8 @@ class Buff : public protocol::serial::Stream {
             std::cout << static_cast<int>(m_buffer[position]) << ' ';
             buffer[i] = m_buffer[position++];
         }
+
+
         std::cout << '\n';
         return ammount_read;
     }
@@ -31,7 +33,7 @@ class Buff : public protocol::serial::Stream {
             std::cout << static_cast<int>(m_buffer[position - 1]) << ' ';
         }
         std::cout << '\n';
-        available += ammount;
+        available += len;
     }
     uint8_t m_buffer[128] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     size_t position = 0;
@@ -44,10 +46,9 @@ class Buff : public protocol::serial::Stream {
 };
 
 int main() {
+    protocol::primitives::Int32 test_val = 12345;
     Buff b;
     ProtocolSM sm;
     sm.set_state(&sm.ctx.s_idle);
-    sm.ctx.conn_stream = &b;
-    sm.ctx.last_rcv_byte = 'a';
-    sm.signal(signals::BYTE_RCV);
+    sm.ctx.stream << test_val;
 }

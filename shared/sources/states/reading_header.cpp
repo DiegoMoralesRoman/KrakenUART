@@ -2,8 +2,9 @@
 
 using namespace protocol::states;
 
-void ReadingHeader::on_enter() {
-
+ProtocolState* ReadingHeader::on_enter() {
+    
+    return this;
 }
 
 void ReadingHeader::on_exit() {
