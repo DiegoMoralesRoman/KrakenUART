@@ -56,9 +56,9 @@ namespace protocol::states {
             void signal(const Signal_t signal);
             void set_state(State<Context>* state);
             
+            Context ctx = Context(this);
         private:
             State<Context>* m_current_state = nullptr, *m_prev_state = nullptr;
-            Context m_ctx;
     };
 }
 

@@ -14,4 +14,4 @@ _deps
 
 **/docs/html/
 **/docs/latex/
-build
+build/

@@ -11,13 +11,16 @@ class Buff : public protocol::serial::Stream {
         }
         prev_writing = false;
 
+        size_t ammount_read = (ammount > available) ? available:ammount;
+        available -= ammount_read;
+
         std::cout << "Reading ";
         for (size_t i = 0; i < ammount; i++) {
             std::cout << static_cast<int>(m_buffer[position]) << ' ';
             buffer[i] = m_buffer[position++];
         }
         std::cout << '\n';
-        return ammount;
+        return ammount_read;
     }
 
     virtual void write(const char* buffer, const size_t len) override {
@@ -28,10 +31,12 @@ class Buff : public protocol::serial::Stream {
             std::cout << static_cast<int>(m_buffer[position - 1]) << ' ';
         }
         std::cout << '\n';
+        available += ammount;
     }
     uint8_t m_buffer[128] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     size_t position = 0;
     bool prev_writing = true;
+    size_t available = 0;
 
     virtual void flush() override {
         std::cout << "Flushing buffer\n";
@@ -41,7 +46,8 @@ class Buff : public protocol::serial::Stream {
 int main() {
     Buff b;
     ProtocolSM sm;
-    TestState test_s(&sm);
-    sm.set_state(&test_s);
-    sm.signal(0);
+    sm.set_state(&sm.ctx.s_idle);
+    sm.ctx.conn_stream = &b;
+    sm.ctx.last_rcv_byte = 'a';
+    sm.signal(signals::BYTE_RCV);
 }
