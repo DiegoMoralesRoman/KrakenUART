@@ -51,11 +51,29 @@ namespace protocol::states {
     template<typename Context>
     class StateMachine {
         public:
+            /**
+             * @brief State machine destructor
+             * @details Calls on_exit() method of current state
+             */
             ~StateMachine();
 
+            /**
+             * @details Sends an update signal to the current state
+             * @param signal Signal to send
+             */
             void signal(const Signal_t signal);
+
+            /**
+             * @brief Sets the current state of the state machine
+             * @details Calls on_enter() method of the state
+             * @param state State to change to
+             */
             void set_state(State<Context>* state);
             
+            /**
+             * @brief Context available to the states
+             * @details This context conatins "global" variables
+             */
             Context ctx = Context(this);
         private:
             State<Context>* m_current_state = nullptr, *m_prev_state = nullptr;

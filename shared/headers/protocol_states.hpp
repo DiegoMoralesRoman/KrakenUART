@@ -24,13 +24,15 @@ namespace protocol::states {
 
     template class State<___impl::ProtocolSMContext>;
     using ProtocolState = State<___impl::ProtocolSMContext>;
+
     // ==================================================
     // States definitions
     // ==================================================
 
     /**
      * State machine diagram
-     *
+     * Copy on https://mermaid.live/edit
+
      graph LR
         Idle --"on_byte_rcv"--> RH[OnReadingHeader]
         RH --"on_byte"--> RH
@@ -43,6 +45,7 @@ namespace protocol::states {
         IM --"on_data_message"--> NotifyUser --> Flush
         Flush --> Idle
         Idle --"on_sending"--> WritingMessage
+
      */
 
     /**
@@ -68,7 +71,24 @@ namespace protocol::states {
             State* on_enter() override;
             void on_exit() override;
             ProtocolState* signal(const Signal_t signal) override;
+
+        private:
+            size_t bytes_read = 0;
     };
+
+    class ReadingBody : public ProtocolState {
+        public:
+            ReadingBody(ProtocolSM* sm) : ProtocolState{sm} {}
+
+            ProtocolState* on_enter() override;
+            void on_exit() override;
+            ProtocolState* signal(const Signal_t signal) override;
+    }
+
+
+    // ==================================================
+    // End of state definitions
+    // ==================================================
 
     // State machine context
     namespace ___impl {
@@ -87,6 +107,9 @@ namespace protocol::states {
                 ProtocolSMContext* ctx;
         };
 
+        /**
+         * @brief Protocol state machine context
+         */
         struct ProtocolSMContext {
             ProtocolSMContext(ProtocolSM* sm);
 
@@ -96,6 +119,7 @@ namespace protocol::states {
             // States
             Idle s_idle;
             ReadingHeader s_reading_header;
+            ReadingBody s_reading_body;
             
             // Other variables
             ProtocolStream stream = ProtocolStream(this);
