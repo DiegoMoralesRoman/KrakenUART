@@ -8,24 +8,24 @@ using namespace protocol::messages;
 // Header
 // ==================================================
 
-#include <iostream>
-void Header::serialize(protocol::serial::Stream& stream) const {
-
+char *const Header::serialize(char *const buffer) const {
+    return buffer;
 }
 
-void Header::deserialize(protocol::serial::Stream& stream) {
-
+char *const Header::deserialize(char *const buffer) {
+    return buffer;
 }
 
 // ==================================================
-// Admin
+// Test message TODO: delete when finished
 // ==================================================
-void Admin::serialize(protocol::serial::Stream& stream) const {
-    stream << ack;
-} 
 
-void Admin::deserialize(protocol::serial::Stream& stream) {
-    stream >> ack;
+char *const Test::serialize(char *const buffer) const {
+    return buffer << number;
+}
+
+char *const Test::deserialize(char *const buffer) {
+    return buffer >> number;
 }
 
 // ==================================================

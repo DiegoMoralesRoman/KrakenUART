@@ -10,10 +10,8 @@ namespace protocol::messages {
      */
     enum Types : uint8_t {
         // Protocol messages
-        ADMIN,
+        TEST
         // RMI messages
-        RPCCALL,
-        RPCRETURN 
 
         // Custom messages
     };
@@ -51,19 +49,19 @@ namespace protocol::messages {
     };
 
 
-    /**
-     * @brief 
-     */
-    class Admin : public ProtocolMessage {
+    // ==================================================
+    // Protocol messages
+    // ==================================================
+    class Test : public ProtocolMessage {
         public:
-            primitives::Int8 ack;
+            primitives::Int32 number;
 
-            virtual size_t size() const override {return ack.size();}
-            
+            virtual size_t size() const override {return number.size();}
+
             char *const serialize(char *const buffer) const override;
             char *const deserialize(char *const buffer) override;
 
-            virtual uint8_t type() const override {return ADMIN;}
+            uint8_t type() const override {return TEST;}
     };
 
     // ==================================================

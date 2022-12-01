@@ -12,25 +12,6 @@ namespace protocol::primitives {
     // ==================================================
     // Primitive protocol types
     // ==================================================
-    namespace ___impl {
-        struct SerializationWrapper {
-            char *const buffer;
-            size_t base_position;
-
-            operator char*();
-        };
-    };
-
-    // Serialization operatos
-    ___impl::SerializationWrapper operator<<(char *const buffer, const serial::Serializable&& serializable);
-    ___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper, const serial::Serializable&& serializable);
-    // Deserialization operators
-    ___impl::SerializationWrapper operator>>(char *const buffer, serial::Serializable& serializable);
-    ___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper, serial::Serializable& serializable);
-
-    // ==================================================
-    // Primitive protocol types
-    // ==================================================
 
         // --- Integer types ---
 

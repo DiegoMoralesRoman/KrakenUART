@@ -34,44 +34,6 @@ void copy_buffer(const char* source, char* destination, size_t ammount) {
 }
 
 // ==================================================
-// Serialization and deserialization buffer wrappers
-// ==================================================
-___impl::SerializationWrapper::operator char *() {
-    return buffer;
-}
-// Serialization operatos
-___impl::SerializationWrapper operator<<(char *const buffer, const protocol::serial::Serializable&& serializable) {
-    serializable.serialize(buffer);
-    return {
-        buffer,
-        serializable.size()
-    };
-}
-
-___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper, const protocol::serial::Serializable&& serializable) {
-    wrapper.base_position += serializable.size();
-    serializable.serialize(wrapper.buffer + wrapper.base_position);
-
-    return wrapper;
-}
-
-// Deserialization operators
-___impl::SerializationWrapper operator>>(char *const buffer, protocol::serial::Serializable& serializable) {
-    serializable.deserialize(buffer);
-    return {
-        buffer,
-        serializable.size()
-    };
-}
-
-___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper, protocol::serial::Serializable& serializable) {
-    wrapper.base_position += serializable.size();
-    serializable.deserialize(wrapper.buffer + wrapper.base_position);
-
-    return wrapper;
-}
-
-// ==================================================
 // Primitive serialization implementation
 // ==================================================
 char *const Int32::serialize(char *const buffer) const {
