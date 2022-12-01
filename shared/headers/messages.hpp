@@ -44,8 +44,8 @@ namespace protocol::messages {
      */
     class Header : public serial::Serializable {
         public:
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
+            char *const serialize(char *const buffer) const override;
+            char *const deserialize(char *const buffer) override;
         private:
             // TODO: add size and checksum variables
     };
@@ -59,9 +59,9 @@ namespace protocol::messages {
             primitives::Int8 ack;
 
             virtual size_t size() const override {return ack.size();}
-
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
+            
+            char *const serialize(char *const buffer) const override;
+            char *const deserialize(char *const buffer) override;
 
             virtual uint8_t type() const override {return ADMIN;}
     };
@@ -70,41 +70,6 @@ namespace protocol::messages {
     // RMI messages
     // ==================================================
     // #include "rmi.hpp"
-    class RPCCall : public ProtocolMessage {
-        public:
-
-            virtual size_t size() const override {return 0;}
-
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
-
-            virtual uint8_t type() const override {return RPCCALL;}
-
-            // Internal variables
-            primitives::Int32 call_hash;
-            primitives::Int16 UID;
-            primitives::Int32 args[3];
-    };
-
-    class RPCReturn : public ProtocolMessage {
-        public:
-            virtual size_t size() const override {return 0;}
-
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
-
-            virtual uint8_t type() const override {return RPCRETURN;}
-    
-            // Internal variables
-            primitives::Int16 UID;
-            primitives::Int32 ret;
-            primitives::Int8 status;
-
-            enum ReturnValues : uint8_t {
-                OK,
-                NOT_FOUND,
-            };
-    };
 
     // ==================================================
     // Custom messages

@@ -1,6 +1,7 @@
 #include "../headers/primitives.hpp"
 
 #include <stdint.h>
+#include <string_view>
 #include <utility>
 #include <type_traits>
 
@@ -26,82 +27,126 @@ const bool ___init = []() -> bool {
     return true;
 }();
 
+// TODO:make more optimized version using word size for bulk copying
+void copy_buffer(const char* source, char* destination, size_t ammount) {
+    for (size_t i = 0; i < ammount; i++)
+        destination[i] = source[i];
+}
+
+// ==================================================
+// Serialization and deserialization buffer wrappers
+// ==================================================
+___impl::SerializationWrapper::operator char *() {
+    return buffer;
+}
+// Serialization operatos
+___impl::SerializationWrapper operator<<(char *const buffer, const protocol::serial::Serializable&& serializable) {
+    serializable.serialize(buffer);
+    return {
+        buffer,
+        serializable.size()
+    };
+}
+
+___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper, const protocol::serial::Serializable&& serializable) {
+    wrapper.base_position += serializable.size();
+    serializable.serialize(wrapper.buffer + wrapper.base_position);
+
+    return wrapper;
+}
+
+// Deserialization operators
+___impl::SerializationWrapper operator>>(char *const buffer, protocol::serial::Serializable& serializable) {
+    serializable.deserialize(buffer);
+    return {
+        buffer,
+        serializable.size()
+    };
+}
+
+___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper, protocol::serial::Serializable& serializable) {
+    wrapper.base_position += serializable.size();
+    serializable.deserialize(wrapper.buffer + wrapper.base_position);
+
+    return wrapper;
+}
 
 // ==================================================
 // Primitive serialization implementation
 // ==================================================
-void Int32::serialize(protocol::serial::Stream& stream) const {
+char *const Int32::serialize(char *const buffer) const {
+    auto* tmp = reinterpret_cast<const char*>(&m_value);
     if (is_big_endian) {
-        stream.write(reinterpret_cast<const char*>(&m_value), 4);
+        copy_buffer(tmp, buffer, 4);
     } else {
-        auto* tmp = reinterpret_cast<const char*>(&m_value);
-        char swap[4];
-        swap[0] = tmp[3];
-        swap[1] = tmp[2];
-        swap[2] = tmp[1];
-        swap[3] = tmp[0];
-        stream.write(static_cast<const char*>(swap), 4);
+        buffer[0] = tmp[3];
+        buffer[1] = tmp[2];
+        buffer[2] = tmp[1];
+        buffer[3] = tmp[0];
     }
+    return buffer + 4;
 }
 
-void Int32::deserialize(protocol::serial::Stream& stream) {
+char *const Int32::deserialize(char *const buffer) {
+    auto* tmp = reinterpret_cast<char*>(&m_value);
     if (is_big_endian)
-        stream.read(reinterpret_cast<char*>(&m_value), 4);
+        copy_buffer(buffer, tmp, 4);
     else {
-        auto* tmp = reinterpret_cast<char*>(&m_value);
-        char buffer[4];
-        stream.read(buffer, 4);
         tmp[0] = buffer[3];
         tmp[1] = buffer[2];
         tmp[2] = buffer[1];
         tmp[3] = buffer[0];
     }
+    return buffer + 4;
 }
 
 // Int16
-void Int16::serialize(protocol::serial::Stream& stream) const {
+char *const Int16::serialize(char *const buffer) const { 
+    auto* tmp = reinterpret_cast<const char*>(&m_value);
     if (is_big_endian)
-        stream.write(reinterpret_cast<const char*>(&m_value), 2);
+        copy_buffer(tmp, buffer, 2);
     else {
-        auto* tmp = reinterpret_cast<const char*>(&m_value);
-        char swap[2];
-        swap[0] = tmp[1];
-        swap[1] = tmp[0];
-        stream.write(static_cast<const char*>(swap), 2);
+        buffer[0] = tmp[1];
+        buffer[1] = tmp[0];
     }
+    return buffer + 2;
 }
 
-void Int16::deserialize(serial::Stream &stream) {
+char *const Int16::deserialize(char *const buffer) {
+    auto* tmp = reinterpret_cast<char*>(&m_value);
     if (is_big_endian) {
-        stream.read(reinterpret_cast<char*>(&m_value), 2);
+        copy_buffer(buffer, reinterpret_cast<char*>(&m_value), 2);
     } else {
-        auto* tmp = reinterpret_cast<char*>(&m_value);
-        char buffer[2];
-        stream.read(buffer, 2);
-        tmp[0] = buffer[1];
-        tmp[1] = buffer[0];
+        buffer[0] = tmp[1];
+        buffer[1] = tmp[0];
     }
+    return buffer + 2;
 }
 
 // // Int8
-void Int8::serialize(serial::Stream &stream) const {
-    stream.write(reinterpret_cast<const char*>(&m_value), 1);
+char *const Int8::serialize(char *const buffer) const {
+    buffer[0] = m_value;
+    return buffer + 1;
 }
 
-void Int8::deserialize(serial::Stream &stream) {
-    stream.read(reinterpret_cast<char*>(&m_value), 1);
+char *const Int8::deserialize(char *const buffer) {
+    m_value = buffer[0];
+    return buffer + 1;
 }
 
-void String::serialize(serial::Stream &stream) const {
-    stream << Size(string.length());
-    stream.write(string.c_str(), string.length());
+char *const String::serialize(char *const buffer) const {
+    char* buff_con = Size(string.length()).serialize(buffer);
+    copy_buffer(string.c_str(), buff_con, string.length());
+    return buff_con + string.length();
 }
 
-void String::deserialize(serial::Stream &stream) {
+char *const String::deserialize(char *const buffer) {
     Size len;
-    stream >> len;
+    char* buff_conn = len.deserialize(buffer);
+    // TODO: add comprobation for maximum string size
     string = std::string(static_cast<size_t>(len), 0);
-    stream.read(string.data(), string.length());
+    copy_buffer(buff_conn, string.data(), string.length());
+    return buff_conn + string.length();
 }
 
 String::String(const char* str)

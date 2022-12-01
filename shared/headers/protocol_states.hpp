@@ -83,7 +83,7 @@ namespace protocol::states {
             ProtocolState* on_enter() override;
             void on_exit() override;
             ProtocolState* signal(const Signal_t signal) override;
-    }
+    };
 
 
     // ==================================================
@@ -99,8 +99,8 @@ namespace protocol::states {
                 ProtocolStream(ProtocolSMContext* ctx)
                     : ctx(ctx) {}
 
-                void write(const char *buff, size_t ammount) override;
-                size_t read(char *buff, const size_t ammount) override;
+                void propagate(const PropagationContext &&ctx) override;
+
                 void flush() override;
 
             private:

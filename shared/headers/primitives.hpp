@@ -9,6 +9,24 @@
 #include "serial.hpp"
 
 namespace protocol::primitives {
+    // ==================================================
+    // Primitive protocol types
+    // ==================================================
+    namespace ___impl {
+        struct SerializationWrapper {
+            char *const buffer;
+            size_t base_position;
+
+            operator char*();
+        };
+    };
+
+    // Serialization operatos
+    ___impl::SerializationWrapper operator<<(char *const buffer, const serial::Serializable&& serializable);
+    ___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper, const serial::Serializable&& serializable);
+    // Deserialization operators
+    ___impl::SerializationWrapper operator>>(char *const buffer, serial::Serializable& serializable);
+    ___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper, serial::Serializable& serializable);
 
     // ==================================================
     // Primitive protocol types
@@ -30,8 +48,8 @@ namespace protocol::primitives {
             static constexpr size_t static_size() {return 4;}
             virtual size_t size() const override {return static_size();}
 
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
+            char *const serialize(char *const buffer) const override;
+            char *const deserialize(char *const buffer) override;
         private:
             uint32_t m_value = 0;
     };
@@ -52,8 +70,8 @@ namespace protocol::primitives {
             static constexpr size_t static_size() {return 2;}
             virtual size_t size() const override {return static_size();}
 
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
+            char *const serialize(char *const buffer) const override;
+            char *const deserialize(char *const buffer) override;
         private:
             uint16_t m_value = 0;
     };
@@ -71,8 +89,8 @@ namespace protocol::primitives {
             static constexpr size_t static_size() {return 1;}
             virtual size_t size() const override {return static_size();}
 
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
+            char *const serialize(char *const buffer) const override;
+            char *const deserialize(char *const buffer) override;
         private:
             uint8_t m_value = 0;
     };
@@ -89,8 +107,8 @@ namespace protocol::primitives {
             // Virtual methods overloading
             virtual size_t size() const override {return string.length() + Int32::static_size();}
 
-            virtual void serialize(serial::Stream& stream) const override;
-            virtual void deserialize(serial::Stream& stream) override;
+            char *const serialize(char *const buffer) const override;
+            char *const deserialize(char *const buffer) override;
     };
 
     // Boolean constants

@@ -8,17 +8,8 @@ ___impl::ProtocolSMContext::ProtocolSMContext(ProtocolSM* sm) :
 {}
 
 // Protocol stream
-size_t ___impl::ProtocolStream::read(char *buff, const size_t ammount) {
+void ___impl::ProtocolStream::propagate(const PropagationContext &&ctx) {
 
-    return ammount;
-}
-
-void ___impl::ProtocolStream::write(const char *buff, size_t ammount) {
-    for (size_t i = 0; i < ammount; i++) {
-        char c = buff[i];
-        ctx->last_rcv_byte = c;
-        ctx->sm->signal(signals::BYTE_RCV);
-    }
 }
 
 void ___impl::ProtocolStream::flush() {
