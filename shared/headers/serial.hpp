@@ -16,9 +16,7 @@ namespace protocol::serial {
             /**
              * @brief Propagates the TODO: finish documentation
              */
-            virtual void propagate(const PropagationContext&& ctx) = 0;
-
-            void connect(Stream* other);
+            virtual void propagate(const PropagationContext& ctx) = 0;
 
             /**
              * @brief Flushes the stream and sends or reads everything
@@ -27,12 +25,12 @@ namespace protocol::serial {
 
 
             struct PropagationContext {
-                size_t ammount;
+                char* connected_buffer;
             };
 
         private:
-            Stream* m_connected_stream;
     };
+
 
     /**
      *  @brief Base serialization class

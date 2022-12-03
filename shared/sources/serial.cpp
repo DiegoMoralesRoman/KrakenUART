@@ -66,3 +66,6 @@ ___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper
     return wrapper;
 }
 
+// ==================================================
+// Stream
+// ==================================================

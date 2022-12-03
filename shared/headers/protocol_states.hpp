@@ -99,7 +99,7 @@ namespace protocol::states {
                 ProtocolStream(ProtocolSMContext* ctx)
                     : ctx(ctx) {}
 
-                void propagate(const PropagationContext &&ctx) override;
+                void propagate(const PropagationContext &ctx) override;
 
                 void flush() override;
 
