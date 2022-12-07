@@ -15,10 +15,6 @@ void Idle::on_exit() {
 #include <iostream>
 
 ProtocolState* Idle::signal(const Signal_t signal) {
-    switch (signal) {
-        case signals::BYTE_RCV:
-            std::cout << static_cast<int>(m_state_machine->ctx.last_rcv_byte) << ' ';
-    }
 
     return this;
 }

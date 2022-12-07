@@ -21,7 +21,7 @@ ___impl::SerializationWrapper::operator char *() {
     return buffer;
 }
 // Serialization operatos
-___impl::SerializationWrapper operator<<(char *const buffer, const protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper protocol::serial::operator<<(char *const buffer, const protocol::serial::Serializable& serializable) {
     serializable.serialize(buffer);
     return {
         buffer,
@@ -29,7 +29,7 @@ ___impl::SerializationWrapper operator<<(char *const buffer, const protocol::ser
     };
 }
 
-___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper, const protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper& protocol::serial::operator<<(___impl::SerializationWrapper& wrapper, const protocol::serial::Serializable& serializable) {
     wrapper.base_position += serializable.size();
     serializable.serialize(wrapper.buffer + wrapper.base_position);
 
@@ -37,7 +37,7 @@ ___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper
 }
 
 // Deserialization operators
-___impl::SerializationWrapper operator>>(char *const buffer, protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper protocol::serial::operator>>(char *const buffer, protocol::serial::Serializable& serializable) {
     serializable.deserialize(buffer);
     return {
         buffer,
@@ -45,7 +45,7 @@ ___impl::SerializationWrapper operator>>(char *const buffer, protocol::serial::S
     };
 }
 
-___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper, protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper& protocol::serial::operator>>(___impl::SerializationWrapper& wrapper, protocol::serial::Serializable& serializable) {
     wrapper.base_position += serializable.size();
     serializable.deserialize(wrapper.buffer + wrapper.base_position);
 

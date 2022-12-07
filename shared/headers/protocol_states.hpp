@@ -11,7 +11,7 @@ namespace protocol::states {
 
     namespace signals {
         enum {
-            BYTE_RCV,
+            BYTES_RCV,
             SEND,
             HASH_ERROR
         };
@@ -21,6 +21,10 @@ namespace protocol::states {
     * State machine
     */
     using ProtocolSM = StateMachine<___impl::ProtocolSMContext>;
+
+    // Syntax sugar operators
+    ProtocolSM& operator<<(ProtocolSM& protocol_sm, const serial::Serializable& serializable);
+    const ProtocolSM& operator>>(const ProtocolSM& protocol_sm, serial::Serializable& serializable);
 
     template class State<___impl::ProtocolSMContext>;
     using ProtocolState = State<___impl::ProtocolSMContext>;
@@ -89,6 +93,25 @@ namespace protocol::states {
     // ==================================================
     // End of state definitions
     // ==================================================
+    class ProtocolBuffer {
+        public:
+            /**
+             * @brief Checks buffer to see if the hash coincides with what's in the buffer
+             */
+            virtual bool check_hash(uahruart::utils::hash_t hash) = 0;
+            
+            /**
+             * @brief Serialization
+             * @return Has to return the internal buffer to continue serialization
+             */
+            virtual char* operator<<(const ::protocol::serial::Serializable& serializable) = 0;
+
+            /**
+             * @brief Deserialization
+             * @return Has to return the internal buffer to continue deserialization
+             */
+            virtual const char* operator>>(::protocol::serial::Serializable& serializable) const = 0;
+    };
 
     // State machine context
     namespace ___impl {
@@ -112,6 +135,7 @@ namespace protocol::states {
             
             // Other variables
             ProtocolSM* sm;
+            ProtocolBuffer* buffer;
         };
     }
 }

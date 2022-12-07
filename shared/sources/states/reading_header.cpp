@@ -15,7 +15,7 @@ void ReadingHeader::on_exit() {
 
 ProtocolState* ReadingHeader::signal(const Signal_t signal) {
     switch (signal) {
-        case signals::BYTE_RCV: {
+        case signals::BYTES_RCV: {
             ++bytes_read;
             
             // Check if header is already read
