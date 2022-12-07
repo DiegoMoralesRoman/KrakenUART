@@ -94,19 +94,6 @@ namespace protocol::states {
     namespace ___impl {
         struct ProtocolSMContext;
 
-        class ProtocolStream : public serial::Stream {
-            public:
-                ProtocolStream(ProtocolSMContext* ctx)
-                    : ctx(ctx) {}
-
-                void propagate(const PropagationContext &ctx) override;
-
-                void flush() override;
-
-            private:
-                ProtocolSMContext* ctx;
-        };
-
         /**
          * @brief Protocol state machine context
          */
@@ -114,7 +101,9 @@ namespace protocol::states {
             ProtocolSMContext(ProtocolSM* sm);
 
             // Global state variables
-            char last_rcv_byte = 0;
+            char* current_buffer = nullptr;
+            size_t ammount_read = 0;
+        
 
             // States
             Idle s_idle;
@@ -122,7 +111,6 @@ namespace protocol::states {
             ReadingBody s_reading_body;
             
             // Other variables
-            ProtocolStream stream = ProtocolStream(this);
             ProtocolSM* sm;
         };
     }

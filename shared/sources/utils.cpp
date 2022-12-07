@@ -47,3 +47,4 @@ uint32_t uahruart::utils::calculate_hash(void* ptr, uint8_t len) {
 
     return final_hash;
 }
+

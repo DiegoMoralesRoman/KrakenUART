@@ -7,11 +7,3 @@ ___impl::ProtocolSMContext::ProtocolSMContext(ProtocolSM* sm) :
     sm(sm)
 {}
 
-// Protocol stream
-void ___impl::ProtocolStream::propagate(const PropagationContext &ctx) {
-
-}
-
-void ___impl::ProtocolStream::flush() {
-
-}

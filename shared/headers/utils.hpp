@@ -25,8 +25,9 @@ namespace uahruart {
 
 
         // Functions
-        constexpr uint32_t hash_uint32(const uint32_t value) {
-            uint32_t tmp = value;
+        using hash_t = uint32_t;
+        constexpr hash_t hash_uint32(const hash_t value) {
+            hash_t tmp = value;
             tmp += ~(tmp<<15);
             tmp ^=  (tmp>>10);
             tmp +=  (tmp<<3);
@@ -36,10 +37,10 @@ namespace uahruart {
             return tmp;
         }
 
-        uint32_t calculate_hash(void* ptr, uint8_t len);
+        hash_t calculate_hash(void* ptr, uint8_t len);
 
         // Constexpr string hash calculation (it has to be in the header file)
-        constexpr uint32_t hash_string(const char* ptr) {
+        constexpr hash_t hash_string(const char* ptr) {
             /*
             Because this implememtation uses a 32bit hashing function and because the byte array that will be
             hashed doesn't have to have a length divisible by 4 (32bit) there could be some spare bytes left
@@ -55,14 +56,14 @@ namespace uahruart {
             auto hash = hash_uint32;
 
             // Temporal variable for hash calculation (this variable will be the one returned)
-            uint32_t final_hash = 0;
+            hash_t final_hash = 0;
 
-            uint32_t tmp_buff = 0;
-            uint32_t index = 0;
+            hash_t tmp_buff = 0;
+            hash_t index = 0;
             while (ptr[index]) {
-                uint32_t local_index = index % sizeof(uint32_t);
+                hash_t local_index = index % sizeof(hash_t);
 
-                uint32_t value = (uint32_t)ptr[index] << (local_index * 8);
+                hash_t value = (hash_t)ptr[index] << (local_index * 8);
                 tmp_buff |= value;
     
                 if (local_index == 0) {
@@ -73,12 +74,14 @@ namespace uahruart {
                 index++;
     
             }
-            if (((index - 1) % sizeof(uint32_t)) != 0)
+            if (((index - 1) % sizeof(hash_t)) != 0)
                 final_hash ^= hash(tmp_buff);
     
             return final_hash;
         }
     }
+
+    // Utility classes
 }
 
 #endif

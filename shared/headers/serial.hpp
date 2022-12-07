@@ -5,33 +5,6 @@
 #include <stddef.h>
 
 namespace protocol::serial {
-    class Serializable;
-    
-    /**
-     * @brief Base class for Serializable objects to dump their data
-     */
-    class Stream {
-        public:
-            struct PropagationContext;
-            /**
-             * @brief Propagates the TODO: finish documentation
-             */
-            virtual void propagate(const PropagationContext& ctx) = 0;
-
-            /**
-             * @brief Flushes the stream and sends or reads everything
-             */
-            virtual void flush() = 0;
-
-
-            struct PropagationContext {
-                char* connected_buffer;
-            };
-
-        private:
-    };
-
-
     /**
      *  @brief Base serialization class
      *
