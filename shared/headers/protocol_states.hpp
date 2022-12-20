@@ -3,6 +3,7 @@
 
 #include "serial.hpp"
 #include "states.hpp"
+#include "utils.hpp"
 #include <unistd.h>
 
 namespace protocol::states {
@@ -34,28 +35,52 @@ namespace protocol::states {
     // ==================================================
 
     /**
-     * State machine diagram
+     * State machine diagram (Mermaid diagram)
      * Copy on https://mermaid.live/edit
+        graph LR
+            idle[Idle]
+            rh[Reading Header]
+            rb[Reading Body]
+            flush[Flush input / ERR]
 
-     graph LR
-        Idle --"on_byte_rcv"--> RH[OnReadingHeader]
-        RH --"on_byte"--> RH
-        RH --"read_header"--> RB[ReadingBody]
-        RB --"on_byte"--> RB
-        RH --"on_hash_error"--> Flush
-        RB --"on_stream_error"--> Flush
-        RB --"on_msg_ok"--> IM[InterpretMessage]
-        IM --"on_protocol_message"-->Act --> Flush
-        IM --"on_data_message"--> NotifyUser --> Flush
-        Flush --> Idle
-        Idle --"on_sending"--> WritingMessage
+            idle --"Bytes rcv"--> rh --"Header RCVd OK"--> rb
+            rh --"Out of range"--> flush
+            rb --"Header read"--> idle
 
+            flush --"Flushed"--> rh
+
+            wack[Waiting ACK]
+
+            idle --"Data sent"--> wack --"NACK"--> wack
+            wack --"ACK"--> idle
+        
+
+        Example message flow diagram
+    
+        sequenceDiagram
+            participant TX
+            participant RX
+
+            TX ->> RX: Header/Body/SUM
+            alt invalid
+                RX ->> TX: NACK
+                note over TX, RX: Defaults to NACK if ACK is corrupted
+                TX ->> RX: Header/Body/SUM
+            else
+                alt pending messages
+                    RX ->> TX: Header/Body/SUM
+                    RX -> TX: ...
+                else
+                    RX ->> TX: ACK
+                    note over TX, RX: If ACK is corrupted will be NACK
+                end
+            end
      */
 
     /**
      * @brief Base state where sending and receiving are possibilities
      */
-    class Idle : public ProtocolState {
+    class Idle : virtual public ProtocolState {
         public:
             Idle(ProtocolSM* sm) : ProtocolState{sm} {}
 
@@ -68,7 +93,7 @@ namespace protocol::states {
      * @brief Reading the header of the message
      * @details Before leaving, after reading the header, the checksum is calculated
      */
-    class ReadingHeader : public ProtocolState {
+    class ReadingHeader : virtual public ProtocolState {
         public:
             ReadingHeader(ProtocolSM* sm) : ProtocolState{sm} {}
 
@@ -80,9 +105,27 @@ namespace protocol::states {
             size_t bytes_read = 0;
     };
 
-    class ReadingBody : public ProtocolState {
+    class ReadingBody : virtual public ProtocolState {
         public:
             ReadingBody(ProtocolSM* sm) : ProtocolState{sm} {}
+
+            ProtocolState* on_enter() override;
+            void on_exit() override;
+            ProtocolState* signal(const Signal_t signal) override;
+    };
+
+    class WaitingACK : public ProtocolState {
+        public:
+            WaitingACK(ProtocolSM* sm) : ProtocolState{sm} {}
+
+            ProtocolState* on_enter() override;
+            void on_exit() override;
+            ProtocolState* signal(const Signal_t signal) override;
+    };
+
+    class Error : public ProtocolState {
+        public:
+            Error(ProtocolSM* sm) : ProtocolState{sm} {}
 
             ProtocolState* on_enter() override;
             void on_exit() override;
@@ -97,20 +140,41 @@ namespace protocol::states {
         public:
             /**
              * @brief Checks buffer to see if the hash coincides with what's in the buffer
+             * @param hash Hash to check against
+             * @return true if the hash coincides with the provided one
+             *
+             * @details
+             * This method should use the calculate_hash() method that has to be overloaded
              */
             virtual bool check_hash(uahruart::utils::hash_t hash) = 0;
+
+            /**
+             * @brief Returns the calculated hash for the ammount of data written to the buffer
+             * @return Calculated hash
+             */
+            virtual uahruart::utils::hash_t calculate_hash() = 0;
+
+            /**
+             * @brief Start of the transmit buffer
+             */
+            virtual const char* const beginning_tx() = 0;
+
+            /**
+             * @brief Start of the receive buffer
+             */
+            virtual const char* const beginning_rx() = 0;
             
             /**
              * @brief Serialization
              * @return Has to return the internal buffer to continue serialization
              */
-            virtual char* operator<<(const ::protocol::serial::Serializable& serializable) = 0;
+            virtual ProtocolBuffer& operator<<(const ::protocol::serial::Serializable& serializable) = 0;
 
             /**
              * @brief Deserialization
              * @return Has to return the internal buffer to continue deserialization
              */
-            virtual const char* operator>>(::protocol::serial::Serializable& serializable) const = 0;
+            virtual const ProtocolBuffer& operator>>(::protocol::serial::Serializable& serializable) const = 0;
     };
 
     // State machine context

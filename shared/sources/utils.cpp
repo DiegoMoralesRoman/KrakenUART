@@ -3,7 +3,7 @@
 using namespace uahruart::utils;
 
 // Hashing functions
-uint32_t uahruart::utils::calculate_hash(void* ptr, uint8_t len) {
+uint32_t uahruart::utils::calculate_hash(const char* const ptr, uint8_t len) {
     /* uint32_t h = 1;
     for (uint32_t i = 0; i < len; i++)
         h += (uint32_t)((char*)ptr)[i] * i;

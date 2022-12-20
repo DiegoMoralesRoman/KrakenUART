@@ -13,7 +13,16 @@ ___impl::ProtocolSMContext::ProtocolSMContext(ProtocolSM* sm) :
 ProtocolSM& protocol::states::operator<<(ProtocolSM& protocol_sm, const protocol::serial::Serializable& serializable) {
     auto& buffer = *protocol_sm.ctx.buffer;
     // Prepare to send message (with header)
-    buffer << serializable;
+    messages::Header header;
+
+    header.length = serializable.size();
+    buffer  << header 
+            << serializable
+            << primitives::Checksum(uahruart::utils::calculate_hash(
+                                        buffer.beginning_tx(),
+                                        header.size() + serializable.size()));
+    // Calculate hash
+
     return protocol_sm;
 }
 

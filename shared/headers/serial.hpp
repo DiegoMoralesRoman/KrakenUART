@@ -38,12 +38,12 @@ namespace protocol::serial {
         };
     };
 
-        // Serialization operatos
-        ___impl::SerializationWrapper operator<<(char *const buffer, const serial::Serializable& serializable);
-        ___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper& wrapper, const serial::Serializable& serializable);
-        // Deserialization operators
-        ___impl::SerializationWrapper operator>>(char *const buffer, serial::Serializable& serializable);
-        ___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper& wrapper, serial::Serializable& serializable);
+    // Serialization operatos
+    ___impl::SerializationWrapper operator<<(char *const buffer, const serial::Serializable& serializable);
+    ___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper&& wrapper, const serial::Serializable& serializable);
+    // Deserialization operators
+    ___impl::SerializationWrapper operator>>(char *const buffer, serial::Serializable& serializable);
+    ___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper&& wrapper, serial::Serializable& serializable);
 }
 
 #endif // SERIAL_HPP

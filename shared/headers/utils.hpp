@@ -37,7 +37,7 @@ namespace uahruart {
             return tmp;
         }
 
-        hash_t calculate_hash(void* ptr, uint8_t len);
+        hash_t calculate_hash(const char* const ptr, uint8_t len);
 
         // Constexpr string hash calculation (it has to be in the header file)
         constexpr hash_t hash_string(const char* ptr) {
@@ -82,6 +82,9 @@ namespace uahruart {
     }
 
     // Utility classes
+    class HashContinuation {
+        public:
+    };
 }
 
 #endif

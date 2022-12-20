@@ -9,11 +9,11 @@ using namespace protocol::messages;
 // ==================================================
 
 char *const Header::serialize(char *const buffer) const {
-    return buffer;
+    return buffer << length;
 }
 
 char *const Header::deserialize(char *const buffer) {
-    return buffer;
+    return buffer >> length;
 }
 
 // ==================================================

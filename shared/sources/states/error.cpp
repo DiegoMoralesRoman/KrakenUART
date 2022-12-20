@@ -3,15 +3,15 @@
 
 using namespace protocol::states;
 
-ProtocolState* ReadingHeader::on_enter() {
+ProtocolState* Error::on_enter() {
     return this;
 }
 
-void ReadingHeader::on_exit() {
+void Error::on_exit() {
 
 }
 
-ProtocolState* ReadingHeader::signal(const Signal_t signal) {
+ProtocolState* Error::signal(const Signal_t signal) {
     switch (signal) {
         case signals::BYTES_RCV: {
             break;

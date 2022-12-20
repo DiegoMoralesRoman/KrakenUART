@@ -26,7 +26,7 @@ namespace protocol::messages {
      * Sending this kind of message allows the protocol to identify the message types. This is done by adding a header containing
      * message type information that is processed automatically.
      */
-    class ProtocolMessage : public serial::Serializable {
+    class ProtocolMessage : virtual public serial::Serializable {
         public:
             /**
              * @brief This method provides the type value of the class. Return an enum element of type Type.
@@ -40,19 +40,22 @@ namespace protocol::messages {
      * @brief Header of every message it contains the length of the message and a checksum of both the header and the entire message
      * @details The checksum calculation is performed in the following order:
      */
-    class Header : public serial::Serializable {
+    class Header : virtual public serial::Serializable {
         public:
             char *const serialize(char *const buffer) const override;
             char *const deserialize(char *const buffer) override;
-        private:
-            // TODO: add size and checksum variables
+            
+            virtual size_t size() const override {return static_size();}
+            static size_t static_size() {return decltype(Header::length)::static_size();}
+
+            primitives::Int32 length = 0;
     };
 
 
     // ==================================================
     // Protocol messages
     // ==================================================
-    class Test : public ProtocolMessage {
+    class Test : virtual public ProtocolMessage {
         public:
             primitives::Int32 number;
 
