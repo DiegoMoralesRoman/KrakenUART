@@ -15,6 +15,14 @@ void Idle::on_exit() {
 #include <iostream>
 
 ProtocolState* Idle::signal(const Signal_t signal) {
-
+    switch (signal) {
+        case signals::BYTES_RCV: {
+            // Go to reading header
+            return &m_state_machine->ctx.s_reading_header;
+        }
+        case signals::DATA_SENT: {
+            return &m_state_machine->ctx.s_waiting_ack;
+        }
+    }
     return this;
 }

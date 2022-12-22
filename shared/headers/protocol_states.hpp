@@ -4,6 +4,7 @@
 #include "serial.hpp"
 #include "states.hpp"
 #include "utils.hpp"
+#include <array>
 #include <unistd.h>
 
 namespace protocol::states {
@@ -13,7 +14,7 @@ namespace protocol::states {
     namespace signals {
         enum {
             BYTES_RCV,
-            SEND,
+            DATA_SENT,
             HASH_ERROR
         };
     }
@@ -175,6 +176,15 @@ namespace protocol::states {
              * @return Has to return the internal buffer to continue deserialization
              */
             virtual const ProtocolBuffer& operator>>(::protocol::serial::Serializable& serializable) const = 0;
+            
+            enum Actions {
+                BYTES_RCV,
+                SIZE
+            };
+            void on(Actions action, const functor<void()> callback);
+
+            protected:
+            std::array<functor<void()>, Actions::SIZE> m_callbacks = {};
     };
 
     // State machine context
@@ -188,14 +198,16 @@ namespace protocol::states {
             ProtocolSMContext(ProtocolSM* sm);
 
             // Global state variables
-            char* current_buffer = nullptr;
             size_t ammount_read = 0;
-        
+            size_t body_size = 0;
+            const char* tagged_buffer_position = nullptr;
 
             // States
             Idle s_idle;
             ReadingHeader s_reading_header;
             ReadingBody s_reading_body;
+            WaitingACK s_waiting_ack;
+            Error s_error;
             
             // Other variables
             ProtocolSM* sm;

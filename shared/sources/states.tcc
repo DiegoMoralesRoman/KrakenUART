@@ -29,6 +29,7 @@ void StateMachine<Context>::signal(const Signal_t signal) {
     while (m_current_state != m_prev_state) {
         auto* tmp_state = m_prev_state;
         m_prev_state = m_current_state;
+
         m_current_state = m_current_state->on_enter();
         tmp_state->on_exit();
     }

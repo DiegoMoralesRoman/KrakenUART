@@ -6,6 +6,8 @@ ___impl::ProtocolSMContext::ProtocolSMContext(ProtocolSM* sm) :
     s_idle(sm),
     s_reading_header(sm),
     s_reading_body(sm),
+    s_error(sm),
+    s_waiting_ack(sm),
     sm(sm)
 {}
 
@@ -15,12 +17,14 @@ ProtocolSM& protocol::states::operator<<(ProtocolSM& protocol_sm, const protocol
     // Prepare to send message (with header)
     messages::Header header;
 
+    primitives::Checksum calculated_checksum = (uahruart::utils::calculate_hash(
+                                        buffer.beginning_tx(),
+                                        header.size() + serializable.size()));
+
     header.length = serializable.size();
     buffer  << header 
             << serializable
-            << primitives::Checksum(uahruart::utils::calculate_hash(
-                                        buffer.beginning_tx(),
-                                        header.size() + serializable.size()));
+            << calculated_checksum;
     // Calculate hash
 
     return protocol_sm;
@@ -32,3 +36,9 @@ const ProtocolSM& protocol::states::operator>>(const ProtocolSM& protocol_sm, pr
     buffer >> serializable;
     return protocol_sm;
 }
+
+void ProtocolBuffer::on(Actions action, functor<void ()> callback) {
+    if (action <= Actions::SIZE)
+        m_callbacks[action] = callback;
+}
+

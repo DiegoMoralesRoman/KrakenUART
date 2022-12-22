@@ -22,7 +22,7 @@ namespace protocol::serial {
             /**
              * @brief 
              */
-            virtual char *const deserialize(char *const buffer) = 0;
+            virtual const char *const deserialize(const char *const buffer) = 0;
     };
 
 
@@ -42,7 +42,7 @@ namespace protocol::serial {
     ___impl::SerializationWrapper operator<<(char *const buffer, const serial::Serializable& serializable);
     ___impl::SerializationWrapper& operator<<(___impl::SerializationWrapper&& wrapper, const serial::Serializable& serializable);
     // Deserialization operators
-    ___impl::SerializationWrapper operator>>(char *const buffer, serial::Serializable& serializable);
+    ___impl::SerializationWrapper operator>>(const char *const buffer, serial::Serializable& serializable);
     ___impl::SerializationWrapper& operator>>(___impl::SerializationWrapper&& wrapper, serial::Serializable& serializable);
 }
 

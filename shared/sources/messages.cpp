@@ -12,7 +12,7 @@ char *const Header::serialize(char *const buffer) const {
     return buffer << length;
 }
 
-char *const Header::deserialize(char *const buffer) {
+const char *const Header::deserialize(const char *const buffer) {
     return buffer >> length;
 }
 
@@ -24,7 +24,7 @@ char *const Test::serialize(char *const buffer) const {
     return buffer << number;
 }
 
-char *const Test::deserialize(char *const buffer) {
+const char *const Test::deserialize(const char *const buffer) {
     return buffer >> number;
 }
 

@@ -43,7 +43,7 @@ namespace protocol::messages {
     class Header : virtual public serial::Serializable {
         public:
             char *const serialize(char *const buffer) const override;
-            char *const deserialize(char *const buffer) override;
+            const char *const deserialize(const char *const buffer) override;
             
             virtual size_t size() const override {return static_size();}
             static size_t static_size() {return decltype(Header::length)::static_size();}
@@ -62,7 +62,7 @@ namespace protocol::messages {
             virtual size_t size() const override {return number.size();}
 
             char *const serialize(char *const buffer) const override;
-            char *const deserialize(char *const buffer) override;
+            const char *const deserialize(const char *const buffer) override;
 
             uint8_t type() const override {return TEST;}
     };

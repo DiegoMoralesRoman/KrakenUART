@@ -30,7 +30,7 @@ namespace protocol::primitives {
             virtual size_t size() const override {return static_size();}
 
             char *const serialize(char *const buffer) const override;
-            char *const deserialize(char *const buffer) override;
+            const char *const deserialize(const char *const buffer) override;
         private:
             uint32_t m_value = 0;
     };
@@ -52,7 +52,7 @@ namespace protocol::primitives {
             virtual size_t size() const override {return static_size();}
 
             char *const serialize(char *const buffer) const override;
-            char *const deserialize(char *const buffer) override;
+            const char *const deserialize(const char *const buffer) override;
         private:
             uint16_t m_value = 0;
     };
@@ -71,7 +71,7 @@ namespace protocol::primitives {
             virtual size_t size() const override {return static_size();}
 
             char *const serialize(char *const buffer) const override;
-            char *const deserialize(char *const buffer) override;
+            const char *const deserialize(const char *const buffer) override;
         private:
             uint8_t m_value = 0;
     };
@@ -89,7 +89,7 @@ namespace protocol::primitives {
             virtual size_t size() const override {return string.length() + Int32::static_size();}
 
             char *const serialize(char *const buffer) const override;
-            char *const deserialize(char *const buffer) override;
+            const char *const deserialize(const char *const buffer) override;
     };
 
     // Boolean constants

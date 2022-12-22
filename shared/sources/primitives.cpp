@@ -49,7 +49,7 @@ char *const Int32::serialize(char *const buffer) const {
     return buffer + 4;
 }
 
-char *const Int32::deserialize(char *const buffer) {
+const char *const Int32::deserialize(const char *const buffer) {
     auto* tmp = reinterpret_cast<char*>(&m_value);
     if (is_big_endian)
         copy_buffer(buffer, tmp, 4);
@@ -74,13 +74,13 @@ char *const Int16::serialize(char *const buffer) const {
     return buffer + 2;
 }
 
-char *const Int16::deserialize(char *const buffer) {
+const char *const Int16::deserialize(const char *const buffer) {
     auto* tmp = reinterpret_cast<char*>(&m_value);
     if (is_big_endian) {
         copy_buffer(buffer, reinterpret_cast<char*>(&m_value), 2);
     } else {
-        buffer[0] = tmp[1];
-        buffer[1] = tmp[0];
+        tmp[0] = tmp[1];
+        tmp[1] = tmp[0];
     }
     return buffer + 2;
 }
@@ -91,7 +91,7 @@ char *const Int8::serialize(char *const buffer) const {
     return buffer + 1;
 }
 
-char *const Int8::deserialize(char *const buffer) {
+const char *const Int8::deserialize(const char *const buffer) {
     m_value = buffer[0];
     return buffer + 1;
 }
@@ -102,9 +102,9 @@ char *const String::serialize(char *const buffer) const {
     return buff_con + string.length();
 }
 
-char *const String::deserialize(char *const buffer) {
+const char *const String::deserialize(const char *const buffer) {
     Size len;
-    char* buff_conn = len.deserialize(buffer);
+    auto buff_conn = len.deserialize(buffer);
     // TODO: add comprobation for maximum string size
     string = std::string(static_cast<size_t>(len), 0);
     copy_buffer(buff_conn, string.data(), string.length());

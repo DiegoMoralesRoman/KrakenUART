@@ -37,10 +37,10 @@ ___impl::SerializationWrapper& protocol::serial::operator<<(___impl::Serializati
 }
 
 // Deserialization operators
-___impl::SerializationWrapper protocol::serial::operator>>(char *const buffer, protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper protocol::serial::operator>>(const char *const buffer, protocol::serial::Serializable& serializable) {
     serializable.deserialize(buffer);
     return {
-        buffer,
+        const_cast<char*>(buffer),
         serializable.size()
     };
 }
