@@ -5,9 +5,10 @@
 #include "states.hpp"
 #include "utils.hpp"
 #include <array>
-#include <unistd.h>
 
-namespace protocol::states {
+#include "message_identification.hpp"
+
+namespace uahruart::protocol::states {
 
     namespace ___impl {struct ProtocolSMContext;}
 
@@ -25,8 +26,8 @@ namespace protocol::states {
     using ProtocolSM = StateMachine<___impl::ProtocolSMContext>;
 
     // Syntax sugar operators
-    ProtocolSM& operator<<(ProtocolSM& protocol_sm, const serial::Serializable& serializable);
-    const ProtocolSM& operator>>(const ProtocolSM& protocol_sm, serial::Serializable& serializable);
+    ProtocolSM& operator<<(ProtocolSM& protocol_sm, const uahruart::protocol::serial::Serializable& serializable);
+    const ProtocolSM& operator>>(const ProtocolSM& protocol_sm, uahruart::protocol::serial::Serializable& serializable);
 
     template class State<___impl::ProtocolSMContext>;
     using ProtocolState = State<___impl::ProtocolSMContext>;
@@ -169,22 +170,22 @@ namespace protocol::states {
              * @brief Serialization
              * @return Has to return the internal buffer to continue serialization
              */
-            virtual ProtocolBuffer& operator<<(const ::protocol::serial::Serializable& serializable) = 0;
+            virtual ProtocolBuffer& operator<<(const uahruart::protocol::serial::Serializable& serializable) = 0;
 
             /**
              * @brief Deserialization
              * @return Has to return the internal buffer to continue deserialization
              */
-            virtual const ProtocolBuffer& operator>>(::protocol::serial::Serializable& serializable) const = 0;
+            virtual const ProtocolBuffer& operator>>(uahruart::protocol::serial::Serializable& serializable) const = 0;
             
             enum Actions {
                 BYTES_RCV,
                 SIZE
             };
-            void on(Actions action, const functor<void()> callback);
+            void on(Actions action, const functor<void(size_t)> callback);
 
             protected:
-            std::array<functor<void()>, Actions::SIZE> m_callbacks = {};
+            std::array<functor<void(size_t)>, Actions::SIZE> m_callbacks = {};
     };
 
     // State machine context
@@ -201,6 +202,10 @@ namespace protocol::states {
             size_t ammount_read = 0;
             size_t body_size = 0;
             const char* tagged_buffer_position = nullptr;
+
+            uint16_t message_type = static_cast<uint16_t>(uahruart::protocol::id::IDs::UNDEF);
+
+            uahruart::protocol::id::CallbackStore callback_store;
 
             // States
             Idle s_idle;

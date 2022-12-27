@@ -4,7 +4,9 @@
 #include "utils.hpp"
 #include "primitives.hpp"
 
-namespace protocol::messages {
+#include "msg_ids.hpp"
+
+namespace uahruart::protocol::messages {
     /**
      * @brief This enum contains all the available protocol messages implemented. 
      */
@@ -46,9 +48,12 @@ namespace protocol::messages {
             const char *const deserialize(const char *const buffer) override;
             
             virtual size_t size() const override {return static_size();}
-            static size_t static_size() {return decltype(Header::length)::static_size();}
+            static size_t static_size() {return decltype(Header::length)::static_size() + decltype(Header::type)::static_size();}
+
+            virtual const uahruart::protocol::id::IDs type_id() const override {return uahruart::protocol::id::IDs::UNDEF;}
 
             primitives::Int32 length = 0;
+            primitives::Int16 type = static_cast<uint16_t>(uahruart::protocol::id::IDs::UNDEF);
     };
 
 
@@ -65,6 +70,7 @@ namespace protocol::messages {
             const char *const deserialize(const char *const buffer) override;
 
             uint8_t type() const override {return TEST;}
+            virtual const uahruart::protocol::id::IDs type_id() const override {return uahruart::protocol::id::IDs::TEST;}
     };
 
     // ==================================================

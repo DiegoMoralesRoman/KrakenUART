@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+using namespace uahruart;
+
 
 ProtocolSM sm1, sm2;
 
@@ -40,8 +42,7 @@ class SerialBuffer : virtual public ProtocolBuffer {
                 rx_buffer[i + ammount_read] = buffer[i];
             }
             ammount_read += ammount;
-            print_rx();
-            m_callbacks[BYTES_RCV]();
+            m_callbacks[BYTES_RCV](ammount);
         }
 
         void print_tx() {
@@ -95,12 +96,16 @@ int main() {
     sm2.ctx.buffer = &sm2_buffer;
     sm2.set_state(&sm2.ctx.s_idle);
 
-    sm2.ctx.buffer->on(protocol::states::ProtocolBuffer::BYTES_RCV, []() -> void {
+    sm2.ctx.buffer->on(protocol::states::ProtocolBuffer::BYTES_RCV, [](size_t ammount) -> void {
         std::cout << "Mandando señal" << std::endl;
-        sm2.ctx.ammount_read = sm2_buffer.ammount_read;
+        sm2.ctx.ammount_read += ammount;
         sm2.signal(signals::BYTES_RCV);
     });
-    
+
+    sm2.ctx.callback_store.on(protocol::id::IDs::PRIMITIVE_I32, functor<void(protocol::primitives::Int32&)>([](protocol::primitives::Int32& test) {
+        std::cout << "Mensaje de test recibido: " << static_cast<size_t>(test) << '\n';
+    }));
+
     sm1 << message;
 
     sm2_buffer.print_rx();

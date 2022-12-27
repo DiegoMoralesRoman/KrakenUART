@@ -2,18 +2,18 @@
 
 #include "../headers/utils.hpp"
 
-using namespace protocol::messages;
+using namespace uahruart::protocol::messages;
 
 // ==================================================
 // Header
 // ==================================================
 
 char *const Header::serialize(char *const buffer) const {
-    return buffer << length;
+    return buffer << length << type;
 }
 
 const char *const Header::deserialize(const char *const buffer) {
-    return buffer >> length;
+    return buffer >> length >> type;
 }
 
 // ==================================================

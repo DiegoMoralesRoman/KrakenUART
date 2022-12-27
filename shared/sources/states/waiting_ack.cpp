@@ -1,7 +1,7 @@
 #include "../../headers/protocol_states.hpp"
 #include "../../headers/messages.hpp"
 
-using namespace protocol::states;
+using namespace uahruart::protocol::states;
 
 ProtocolState* WaitingACK::on_enter() {
     return this;

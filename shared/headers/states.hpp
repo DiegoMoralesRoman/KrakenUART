@@ -7,7 +7,7 @@
 #include "messages.hpp"
 #include <stddef.h>
 
-namespace protocol::states {
+namespace uahruart::protocol::states {
     template<typename Context>
     class StateMachine;
 

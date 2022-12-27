@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <stddef.h>
 
-namespace protocol::serial {
+#include "msg_ids.hpp"
+
+namespace uahruart::protocol::serial {
     /**
      *  @brief Base serialization class
      *
@@ -23,6 +25,11 @@ namespace protocol::serial {
              * @brief 
              */
             virtual const char *const deserialize(const char *const buffer) = 0;
+
+            /**
+             * @brief 
+             */
+            virtual const uahruart::protocol::id::IDs type_id() const = 0;
     };
 
 

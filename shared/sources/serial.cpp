@@ -1,7 +1,7 @@
 #include "../headers/serial.hpp"
 #include "../headers/primitives.hpp"
 
-using namespace protocol::serial;
+using namespace uahruart::protocol::serial;
 
 // Internal functions 
 template<typename T>
@@ -21,7 +21,7 @@ ___impl::SerializationWrapper::operator char *() {
     return buffer + base_position;
 }
 // Serialization operatos
-___impl::SerializationWrapper protocol::serial::operator<<(char *const buffer, const protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper uahruart::protocol::serial::operator<<(char *const buffer, const protocol::serial::Serializable& serializable) {
     serializable.serialize(buffer);
     return {
         buffer,
@@ -29,7 +29,7 @@ ___impl::SerializationWrapper protocol::serial::operator<<(char *const buffer, c
     };
 }
 
-___impl::SerializationWrapper& protocol::serial::operator<<(___impl::SerializationWrapper&& wrapper, const protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper& uahruart::protocol::serial::operator<<(___impl::SerializationWrapper&& wrapper, const protocol::serial::Serializable& serializable) {
     serializable.serialize(wrapper.buffer + wrapper.base_position);
     wrapper.base_position += serializable.size();
 
@@ -37,7 +37,7 @@ ___impl::SerializationWrapper& protocol::serial::operator<<(___impl::Serializati
 }
 
 // Deserialization operators
-___impl::SerializationWrapper protocol::serial::operator>>(const char *const buffer, protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper uahruart::protocol::serial::operator>>(const char *const buffer, protocol::serial::Serializable& serializable) {
     serializable.deserialize(buffer);
     return {
         const_cast<char*>(buffer),
@@ -45,7 +45,7 @@ ___impl::SerializationWrapper protocol::serial::operator>>(const char *const buf
     };
 }
 
-___impl::SerializationWrapper& protocol::serial::operator>>(___impl::SerializationWrapper&& wrapper, protocol::serial::Serializable& serializable) {
+___impl::SerializationWrapper& uahruart::protocol::serial::operator>>(___impl::SerializationWrapper&& wrapper, protocol::serial::Serializable& serializable) {
     serializable.deserialize(wrapper.buffer + wrapper.base_position);
     wrapper.base_position += serializable.size();
 

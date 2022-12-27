@@ -8,7 +8,7 @@
 
 #include "serial.hpp"
 
-namespace protocol::primitives {
+namespace uahruart::protocol::primitives {
     // ==================================================
     // Primitive protocol types
     // ==================================================
@@ -28,6 +28,7 @@ namespace protocol::primitives {
             // Virtual methods overloading
             static constexpr size_t static_size() {return 4;}
             virtual size_t size() const override {return static_size();}
+            virtual const uahruart::protocol::id::IDs type_id() const override {return uahruart::protocol::id::IDs::PRIMITIVE_I32;}
 
             char *const serialize(char *const buffer) const override;
             const char *const deserialize(const char *const buffer) override;
@@ -50,6 +51,7 @@ namespace protocol::primitives {
 
             static constexpr size_t static_size() {return 2;}
             virtual size_t size() const override {return static_size();}
+            virtual const uahruart::protocol::id::IDs type_id() const override {return uahruart::protocol::id::IDs::PRIMITIVE_I16;}
 
             char *const serialize(char *const buffer) const override;
             const char *const deserialize(const char *const buffer) override;
@@ -69,6 +71,7 @@ namespace protocol::primitives {
 
             static constexpr size_t static_size() {return 1;}
             virtual size_t size() const override {return static_size();}
+            virtual const uahruart::protocol::id::IDs type_id() const override {return uahruart::protocol::id::IDs::PRIMITIVE_I8;}
 
             char *const serialize(char *const buffer) const override;
             const char *const deserialize(const char *const buffer) override;
@@ -87,6 +90,7 @@ namespace protocol::primitives {
             std::string string;
             // Virtual methods overloading
             virtual size_t size() const override {return string.length() + Int32::static_size();}
+            virtual const uahruart::protocol::id::IDs type_id() const override {return uahruart::protocol::id::IDs::PRIMITIVE_STR;}
 
             char *const serialize(char *const buffer) const override;
             const char *const deserialize(const char *const buffer) override;

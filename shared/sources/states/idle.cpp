@@ -1,6 +1,6 @@
 #include "../../headers/protocol_states.hpp"
 
-using namespace protocol::states;
+using namespace uahruart::protocol::states;
 
 ProtocolState* Idle::on_enter() {
 

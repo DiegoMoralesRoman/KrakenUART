@@ -4,7 +4,7 @@
 
 #include <utility>
 
-using namespace protocol::states;
+using namespace uahruart::protocol::states;
 
 template<typename Context>
 StateMachine<Context>::~StateMachine() {

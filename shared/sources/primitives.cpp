@@ -5,14 +5,14 @@
 #include <utility>
 #include <type_traits>
 
-using namespace protocol::primitives;
+using namespace uahruart::protocol::primitives;
 
 
 // ==================================================
 // Initialization
 // ==================================================
-const Int8 protocol::primitives::TRUE = Int8(0b11111111);
-const Int8 protocol::primitives::FALSE = false;
+const Int8 uahruart::protocol::primitives::TRUE = Int8(0b11111111);
+const Int8 uahruart::protocol::primitives::FALSE = false;
 
 // Global variables
 namespace {
